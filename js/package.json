@@ -5,7 +5,7 @@
   "main": "./src/data-structures.js",
   "scripts": {
     "test": "jest",
-    "build": "webpack"
+    "test-watch": "jest --watchAll"
   },
   "author": "Daniel Dorroh",
   "license": "ISC",
