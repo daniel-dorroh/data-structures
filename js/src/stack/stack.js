@@ -30,4 +30,5 @@ export class Stack {
     }
     return this.stack_.pop();
   }
+
 }

@@ -3,7 +3,7 @@ import { Stack } from './stack';
 /**
  * constructor tests
  */
-test('constructor should construct a stack', () => {
+test('constructor makes a stack', () => {
   const stack = new Stack();
   expect(stack).toBeDefined();
   expect(stack.stack_).toHaveLength(0);
