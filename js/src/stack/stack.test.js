@@ -45,7 +45,7 @@ test('pop returns items in lifo order', () => {
  * peek tests
  */
 test('peek empty stack returns undefined', () => {
-  expect(new Stack().peek()).toBeUndefined();
+  expect(new Stack().peek()).toBeNull();
 });
 
 test('peek stack returns top item', () => {

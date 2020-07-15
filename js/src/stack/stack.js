@@ -11,7 +11,7 @@ export class Stack {
 
   peek() {
     if (this.isEmpty()) {
-      return undefined;
+      return null;
     }
     const topIndex = this.stack_.length - 1;
     return this.stack_[topIndex];
