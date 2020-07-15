@@ -2,8 +2,8 @@
 export class ForwardIterator {
 
   constructor(list) {
-    if (!list.hasOwnProperty('getFront')
-        || !list.hasOwnProperty('get')) {
+    if (typeof list.getFront !== 'function'
+        || typeof list.get !== 'function') {
       throw 'list does not have get and/or getFront methods';
     }
     this.list_ = list;
