@@ -147,8 +147,8 @@ test('getFront on a list with item returns the front item', () => {
 /**
  * get tests
  */
-test.each([null, undefined])('push %s id throws', (id) => {
-  expect(() => new SingleList().get(id)).toThrow(`id was ${id}`);
+test.each([null, undefined])('get %s id returns null', (id) => {
+  expect(new SingleList().get(id)).toBeNull();
 });
 
 test.each([{}, [], '1', true])('get non-number id throws -- arg "%s"', (id) => {

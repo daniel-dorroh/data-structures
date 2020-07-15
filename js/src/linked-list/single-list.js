@@ -24,7 +24,7 @@ export class SingleList {
 
   get(itemId) {
     if (itemId === null || itemId === undefined) {
-      throw `id was ${itemId}`;
+      return null;
     }
     if (typeof itemId !== 'number') {
       throw `id was ${typeof itemId}, but it must be a number`;
@@ -50,12 +50,8 @@ export class SingleList {
   }
 
   pushBack(itemValue) {
-    const listItem = {
-      next: null,
-      value: itemValue,
-      id: null,
-    };
-    const itemId = this.addListItem_(listItem);
+    const listItem = this.create_(itemValue, null);
+    const itemId = this.add_(listItem);
     if (this.backId_ !== null) {
       this.list_[this.backId_].next = itemId;
     }
@@ -63,7 +59,6 @@ export class SingleList {
     if (this.frontId_ === null) {
       this.frontId_ = itemId;
     }
-    this.size_++;
     return itemId;
   }
 
@@ -72,34 +67,24 @@ export class SingleList {
     if (referenceItem === null) {
       throw 'itemId specified does not exist';
     }
-    const listItem = {
-      next: referenceItem.next,
-      value: itemValue,
-      id: null,
-    };
-    const itemId = this.addListItem_(listItem);
+    const listItem = this.create_(itemValue, referenceItem.next);
+    const itemId = this.add_(listItem);
     referenceItem.next = itemId;
-    this.size_++;
     return itemId;
   }
 
   pushFront(itemValue) {
-    const listItem = {
-      next: this.frontId_,
-      value: itemValue,
-      id: null,
-    };
-    const itemId = this.addListItem_(listItem);
+    const listItem = this.create_(itemValue, this.frontId_);
+    const itemId = this.add_(listItem);
     this.frontId_ = itemId;
     if (this.backId_ === null) {
       this.backId_ = itemId;
     }
-    this.size_++;
     return itemId;
   }
 
   delete(itemId) {
-    let precedingItem = null;
+    let previousItem = null;
     let nextItem = null;
     const searchedItem = this.get(itemId);
     if (searchedItem === null) {
@@ -107,35 +92,16 @@ export class SingleList {
     }
     for (let item of this) {
       if (itemId === item.id) {
-        if (item.next !== null) {
-          nextItem = this.get(item.next);
-        }
+        nextItem = this.get(item.next);
         break;
       }
-      precedingItem = item;
+      previousItem = item;
     }
-    // beginning of list
-    if (precedingItem === null) {
-      this.frontId_ = searchedItem.next;
-    } else {
-      precedingItem.next = searchedItem.next;
-    }
-    // end of list
-    if (nextItem === null) {
-      // deleting the only item
-      if (precedingItem === null) {
-        this.backId_ = null;
-      } else {
-        this.backId_ = precedingItem.id;
-        precedingItem.next = null;
-      }
-    }
-    this.list_[itemId] = null;
-    this.freedIds_.push(itemId);
-    this.size_--;
+    this.connect_(previousItem, nextItem);
+    this.remove_(itemId);
   }
 
-  addListItem_(listItem) {
+  add_(listItem) {
     let itemId = null;
     if (this.freedIds_.length) {
       itemId = this.freedIds_.pop();
@@ -144,7 +110,36 @@ export class SingleList {
       itemId = this.list_.push(listItem) - 1;
     }
     listItem.id = itemId;
+    this.size_++;
     return itemId;
+  }
+
+  connect_(previousListItem, nextListItem) {
+    if (previousListItem === null && nextListItem === null) {
+      this.frontId_ = null;
+      this.backId_ = null;
+    } else if (previousListItem === null) {
+      this.frontId_ = nextListItem.id;
+    } else if (nextListItem === null) {
+      this.backId_ = previousListItem.id;
+      previousListItem.next = null;
+    } else {
+      previousListItem.next = nextListItem.id;
+    }
+  }
+
+  create_(value, nextItemId) {
+    return {
+      value: value,
+      next: nextItemId,
+      id: null,
+    };
+  }
+
+  remove_(itemId) {
+    this.list_[itemId] = null;
+    this.freedIds_.push(itemId);
+    this.size_--;
   }
 
 }
