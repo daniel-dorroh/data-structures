@@ -18,7 +18,7 @@ export class ForwardIterator {
       this.isLastElement_ = this.currentElement_.next === null;
     }
     return {
-      value: this.currentElement_.value,
+      value: this.currentElement_,
       done: false,
     }
   }

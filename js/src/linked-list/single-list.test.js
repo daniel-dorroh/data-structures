@@ -115,6 +115,81 @@ test('get with valid ids returns items', () => {
   expect(list.get(item2Id).value).toBe(value2);
 });
 
+test('get with invalid id returns null', () => {
+  expect(new SingleList().get(2)).toBeNull();
+});
+
+/**
+ * deleteAt tests
+ */
+test('deleteAt removes only item', () => {
+  const list = new SingleList();
+  const itemId = list.pushBack(25);
+  list.deleteAt(itemId);
+  expect(list.size()).toBe(0);
+  expect(list.backId_).toBeNull();
+  expect(list.frontId_).toBeNull();
+});
+
+test('deleteAt removes item at beginning of the list', () => {
+  const list = new SingleList();
+  const item1Id = list.pushBack(25);
+  const item2Id = list.pushBack(35);
+  list.deleteAt(item1Id);
+  expect(list.size()).toBe(1);
+  expect(list.backId_).toBe(item2Id);
+  expect(list.frontId_).toBe(item2Id);
+});
+
+test('deleteAt removes item at end of the list', () => {
+  const list = new SingleList();
+  const item1Id = list.pushBack(25);
+  const item2Id = list.pushBack(35);
+  list.deleteAt(item2Id);
+  expect(list.size()).toBe(1);
+  expect(list.backId_).toBe(item1Id);
+  expect(list.frontId_).toBe(item1Id);
+  expect(list.get(item1Id).next).toBeNull();
+});
+
+test('deleteAt removes item and relinks existing items', () => {
+  const list = new SingleList();
+  const item1Id = list.pushBack(25);
+  const item2Id = list.pushBack(35);
+  const item3Id = list.pushBack(45);
+  list.deleteAt(item2Id);
+  expect(list.size()).toBe(2);
+  expect(list.backId_).toBe(item3Id);
+  expect(list.frontId_).toBe(item1Id);
+  expect(list.get(item1Id).next).toBe(item3Id);
+});
+
+test('deleteAt does nothing when item id does not exist', () => {
+  const list = new SingleList();
+  const itemId = list.pushBack(25);
+  list.deleteAt(itemId + 1);
+  expect(list.size()).toBe(1);
+});
+
+/**
+ * delete tests
+ */
+test('delete item without an id throws', () => {
+  const list = new SingleList();
+  const itemId = list.pushBack(25)
+  expect(() => list.delete({ value: 25, next: null }))
+      .toThrow('item does not have an id');
+});
+
+test('delete deletes item', () => {
+  const list = new SingleList();
+  const itemId = list.pushBack(25);
+  const item = list.get(itemId);
+  list.delete(item);
+  expect(list.get(itemId)).toBeNull();
+  expect(list.size()).toBe(0);
+});
+
 /**
  * getIterator tests
  */
@@ -127,8 +202,8 @@ test('getIterator returns new iterator at beginning of list', () => {
   for (let i = 0; i < 2; i++) {
     const iterator = list.getIterator();
     expect(iterator).toBeDefined();
-    expect(iterator.next().value).toBe(value1);
-    expect(iterator.next().value).toBe(value2);
+    expect(iterator.next().value.value).toBe(value1);
+    expect(iterator.next().value.value).toBe(value2);
   }
 });
 
@@ -143,7 +218,7 @@ test('iterable protocol implementation allows for for..of iteration', () => {
   list.pushBack(value2);
   const results = [];
   for (let item of list) {
-    results.push(item);
+    results.push(item.value);
   }
   expect(results).toStrictEqual([value1, value2]);
 });
