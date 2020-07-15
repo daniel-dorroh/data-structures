@@ -2,6 +2,10 @@
 export class ForwardIterator {
 
   constructor(list) {
+    if (!list.hasOwnProperty('getFront')
+        || !list.hasOwnProperty('get')) {
+      throw 'list does not have get and/or getFront methods';
+    }
     this.list_ = list;
     this.currentElement_ = null;
     this.isLastElement_ = false;

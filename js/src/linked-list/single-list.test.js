@@ -35,6 +35,14 @@ test('pushBack two items, items are forward-linked', () => {
   expect(list.get(item2Id).next).toBe(null);
 });
 
+test('pushBack an item after a deletion and id is recycled', () => {
+  const list = new SingleList();
+  const item1Id = list.pushBack(25);
+  list.delete(item1Id);
+  const item2Id = list.pushBack(35);
+  expect(item1Id).toBe(item2Id);
+});
+
 /**
  * pushFront tests
  */
@@ -59,6 +67,52 @@ test('pushFront two items, items are forward-linked', () => {
   const item2Id = list.pushFront(35);
   expect(list.get(item2Id).next).toBe(item1Id);
   expect(list.get(item1Id).next).toBe(null);
+});
+
+test('pushFront an item after a deletion and id is recycled', () => {
+  const list = new SingleList();
+  const item1Id = list.pushFront(25);
+  list.delete(item1Id);
+  const item2Id = list.pushFront(35);
+  expect(item1Id).toBe(item2Id);
+});
+
+/**
+ * insertAfter tests
+ */
+test('insertAfter with invalid referenceItemId throws', () => {
+  expect(() => new SingleList().insertAfter(0, 25))
+      .toThrow('itemId specified does not exist');
+});
+
+test('insertAfter adds item to list between two items', () => {
+  const list = new SingleList();
+  const item1Id = list.pushBack(25);
+  const item3Id = list.pushBack(35);
+  const item2Id = list.insertAfter(item1Id, 45);
+  expect(list.get(item1Id).next).toBe(item2Id);
+  expect(list.get(item2Id).next).toBe(item3Id);
+  expect(list.get(item3Id).next).toBeNull();
+  expect(list.size()).toBe(3);
+});
+
+test('insertAfter adds item to end of list', () => {
+  const list = new SingleList();
+  const item1Id = list.pushBack(25);
+  const item2Id = list.insertAfter(item1Id, 45);
+  expect(list.get(item1Id).next).toBe(item2Id);
+  expect(list.get(item2Id).next).toBeNull();
+  expect(list.size()).toBe(2);
+});
+
+test('insertAfter an item after a deletion and id is recycled', () => {
+  const list = new SingleList();
+  const item1Id = list.pushFront(25);
+  const item2Id = list.pushFront(35);
+  list.delete(item1Id);
+  const item3Id = list.insertAfter(item2Id, 45);
+  expect(item1Id).toBe(item3Id);
+  expect(list.size()).toBe(2);
 });
 
 /**
@@ -120,74 +174,62 @@ test('get with invalid id returns null', () => {
 });
 
 /**
- * deleteAt tests
+ * delete tests
  */
-test('deleteAt removes only item', () => {
+test('delete removes only item', () => {
   const list = new SingleList();
   const itemId = list.pushBack(25);
-  list.deleteAt(itemId);
+  list.delete(itemId);
   expect(list.size()).toBe(0);
   expect(list.backId_).toBeNull();
   expect(list.frontId_).toBeNull();
 });
 
-test('deleteAt removes item at beginning of the list', () => {
+test('delete removes item at beginning of the list', () => {
   const list = new SingleList();
   const item1Id = list.pushBack(25);
   const item2Id = list.pushBack(35);
-  list.deleteAt(item1Id);
+  list.delete(item1Id);
   expect(list.size()).toBe(1);
   expect(list.backId_).toBe(item2Id);
   expect(list.frontId_).toBe(item2Id);
 });
 
-test('deleteAt removes item at end of the list', () => {
+test('delete removes item at end of the list', () => {
   const list = new SingleList();
   const item1Id = list.pushBack(25);
   const item2Id = list.pushBack(35);
-  list.deleteAt(item2Id);
+  list.delete(item2Id);
   expect(list.size()).toBe(1);
   expect(list.backId_).toBe(item1Id);
   expect(list.frontId_).toBe(item1Id);
   expect(list.get(item1Id).next).toBeNull();
 });
 
-test('deleteAt removes item and relinks existing items', () => {
+test('delete removes item and relinks existing items', () => {
   const list = new SingleList();
   const item1Id = list.pushBack(25);
   const item2Id = list.pushBack(35);
   const item3Id = list.pushBack(45);
-  list.deleteAt(item2Id);
+  list.delete(item2Id);
   expect(list.size()).toBe(2);
   expect(list.backId_).toBe(item3Id);
   expect(list.frontId_).toBe(item1Id);
   expect(list.get(item1Id).next).toBe(item3Id);
 });
 
-test('deleteAt does nothing when item id does not exist', () => {
+test('delete does nothing when item id does not exist', () => {
   const list = new SingleList();
   const itemId = list.pushBack(25);
-  list.deleteAt(itemId + 1);
+  list.delete(itemId + 1);
   expect(list.size()).toBe(1);
 });
 
-/**
- * delete tests
- */
-test('delete item without an id throws', () => {
-  const list = new SingleList();
-  const itemId = list.pushBack(25)
-  expect(() => list.delete({ value: 25, next: null }))
-      .toThrow('item does not have an id');
-});
-
-test('delete deletes item', () => {
+test('delete adds freed id', () => {
   const list = new SingleList();
   const itemId = list.pushBack(25);
-  const item = list.get(itemId);
-  list.delete(item);
-  expect(list.get(itemId)).toBeNull();
-  expect(list.size()).toBe(0);
+  list.delete(itemId);
+  expect(list.freedIds_).toStrictEqual([itemId]);
 });
 
 /**

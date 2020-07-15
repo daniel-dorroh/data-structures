@@ -22,20 +22,20 @@ export class SingleList {
     return this.getIterator();
   }
 
-  get(id) {
-    if (id === null || id === undefined) {
-      throw `id was ${id}`;
+  get(itemId) {
+    if (itemId === null || itemId === undefined) {
+      throw `id was ${itemId}`;
     }
-    if (typeof id !== 'number') {
-      throw `id was ${typeof id}, but it must be a number`;
+    if (typeof itemId !== 'number') {
+      throw `id was ${typeof itemId}, but it must be a number`;
     }
-    if (!Number.isInteger(id)) {
+    if (!Number.isInteger(itemId)) {
       throw 'id was not an integer';
     }
-    if (id > this.list_.length - 1) {
+    if (itemId > this.list_.length - 1) {
       return null;
     }
-    return this.list_[id];
+    return this.list_[itemId];
   }
 
   getFront() {
@@ -55,8 +55,7 @@ export class SingleList {
       value: itemValue,
       id: null,
     };
-    const itemId = this.list_.push(listItem) - 1;
-    this.list_[itemId].id = itemId;
+    const itemId = this.addListItem_(listItem);
     if (this.backId_ !== null) {
       this.list_[this.backId_].next = itemId;
     }
@@ -68,14 +67,29 @@ export class SingleList {
     return itemId;
   }
 
+  insertAfter(referenceItemId, itemValue) {
+    const referenceItem = this.get(referenceItemId);
+    if (referenceItem === null) {
+      throw 'itemId specified does not exist';
+    }
+    const listItem = {
+      next: referenceItem.next,
+      value: itemValue,
+      id: null,
+    };
+    const itemId = this.addListItem_(listItem);
+    referenceItem.next = itemId;
+    this.size_++;
+    return itemId;
+  }
+
   pushFront(itemValue) {
     const listItem = {
       next: this.frontId_,
       value: itemValue,
       id: null,
     };
-    const itemId = this.list_.push(listItem) - 1;
-    this.list_[itemId].id = itemId;
+    const itemId = this.addListItem_(listItem);
     this.frontId_ = itemId;
     if (this.backId_ === null) {
       this.backId_ = itemId;
@@ -84,15 +98,15 @@ export class SingleList {
     return itemId;
   }
 
-  deleteAt(id) {
+  delete(itemId) {
     let precedingItem = null;
     let nextItem = null;
-    const searchedItem = this.get(id);
+    const searchedItem = this.get(itemId);
     if (searchedItem === null) {
       return;
     }
     for (let item of this) {
-      if (id === item.id) {
+      if (itemId === item.id) {
         if (item.next !== null) {
           nextItem = this.get(item.next);
         }
@@ -116,16 +130,21 @@ export class SingleList {
         precedingItem.next = null;
       }
     }
-    this.list_[id] = null;
-    this.freedIds_.push(id);
+    this.list_[itemId] = null;
+    this.freedIds_.push(itemId);
     this.size_--;
   }
 
-  delete(item) {
-    if (!item.hasOwnProperty('id')) {
-      throw 'item does not have an id';
+  addListItem_(listItem) {
+    let itemId = null;
+    if (this.freedIds_.length) {
+      itemId = this.freedIds_.pop();
+      this.list_[itemId] = listItem;
+    } else {
+      itemId = this.list_.push(listItem) - 1;
     }
-    this.deleteAt(item.id);
+    listItem.id = itemId;
+    return itemId;
   }
 
 }
