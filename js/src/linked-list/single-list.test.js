@@ -55,18 +55,18 @@ test('pushFront on empty list, front and back the same', () => {
 
 test('pushFront two items, second is front first is back', () => {
   const list = new SingleList();
-  const item1Id = list.pushFront(25);
-  const item2Id = list.pushFront(35);
-  expect(list.frontId_).toBe(item2Id);
-  expect(list.backId_).toBe(item1Id);
+  const item2Id = list.pushFront(25);
+  const item1Id = list.pushFront(35);
+  expect(list.frontId_).toBe(item1Id);
+  expect(list.backId_).toBe(item2Id);
 });
 
 test('pushFront two items, items are forward-linked', () => {
   const list = new SingleList();
-  const item1Id = list.pushFront(25);
-  const item2Id = list.pushFront(35);
-  expect(list.get(item2Id).next).toBe(item1Id);
-  expect(list.get(item1Id).next).toBe(null);
+  const item2Id = list.pushFront(25);
+  const item1Id = list.pushFront(35);
+  expect(list.get(item1Id).next).toBe(item2Id);
+  expect(list.get(item2Id).next).toBe(null);
 });
 
 test('pushFront an item after a deletion and id is recycled', () => {
@@ -107,11 +107,11 @@ test('insertAfter adds item to end of list', () => {
 
 test('insertAfter an item after a deletion and id is recycled', () => {
   const list = new SingleList();
-  const item1Id = list.pushFront(25);
-  const item2Id = list.pushFront(35);
-  list.delete(item1Id);
-  const item3Id = list.insertAfter(item2Id, 45);
-  expect(item1Id).toBe(item3Id);
+  const item2Id = list.pushFront(25);
+  const item1Id = list.pushFront(35);
+  list.delete(item2Id);
+  const item3Id = list.insertAfter(item1Id, 45);
+  expect(item2Id).toBe(item3Id);
   expect(list.size()).toBe(2);
 });
 
@@ -163,8 +163,8 @@ test('get with valid ids returns items', () => {
   const list = new SingleList();
   const value1 = 25;
   const value2 = 35;
-  const item1Id = list.pushFront(value1);
-  const item2Id = list.pushFront(value2);
+  const item1Id = list.pushBack(value1);
+  const item2Id = list.pushBack(value2);
   expect(list.get(item1Id).value).toBe(value1);
   expect(list.get(item2Id).value).toBe(value2);
 });
