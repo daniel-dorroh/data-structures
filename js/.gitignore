@@ -1,2 +1,6 @@
 
+# NPM dependencies
 node_modules/
+
+# Jest coverage report
+coverage/

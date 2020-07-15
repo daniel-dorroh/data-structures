@@ -5,7 +5,7 @@
   "main": "./src/data-structures.js",
   "scripts": {
     "test": "jest",
-    "test-watch": "jest --watchAll"
+    "test-watch": "jest --watchAll --coverage"
   },
   "author": "Daniel Dorroh",
   "license": "ISC",
