@@ -29,6 +29,7 @@ describe('insert', () => {
 
   test('orders inserted items', () => {
     const list = new SkipList();
+    debugger;
     list.insert(20);
     list.insert(2);
     list.insert(5);

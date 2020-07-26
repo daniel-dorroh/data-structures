@@ -18,46 +18,59 @@ export class SkipList {
   }
 
   insert(itemValue) {
-    debugger;
+    // Get level of item and add any levels if possible given new size.
+    const itemHeight = this.getItemHeight_();
+
     const item = {
       value: itemValue,
       baseId: null,
+      ids: {},
     };
     const baseList = this.getBaseList_();
-    if (!baseList.size()) {
+
+    // Insert front for empty list
+    // Insert front for value less than front
+    const baseListSize = baseList.size();
+    const frontItem = baseListSize ? baseList.getFront() : null;
+    if (!baseListSize || frontItem.value.value > itemValue) {
       this.frontId_ = baseList.pushFront(item);
       item.baseId = this.frontId_;
-      return;
+      return item.baseId;
     }
-    const itemHeight = this.getItemHeight_();
-    let leftItem = null;
+    let leftHandItem = null;
+    // Search for spot in base list to insert
     for (let i = this.lists_.length - 1; i === 0; i--) {
       const level = this.lists_[i];
-      const levelIterator = level.getIterator(leftItem);
+      const levelIterator = level.getIterator(leftHandItem && leftHandItem.value.ids[i]);
+      let lastLevelItem = null;
       while (true) {
         const iteratorResult = levelIterator.next();
         if (iteratorResult.done) {
           break;
         }
-        const levelItemValue = iteratorResult.value.value;
-        if (levelItemValue.value < itemValue) {
-          leftItem = level.get(iteratorResult.value.id);
+        // TODO: come up with better names for
+        // - level
+        // - levelItem
+        // - levelItemValue
+        // values are { value, baseId, ids }
+        const levelItem = iteratorResult.value;
+        const levelItemValue = levelItem.value;
+        if (itemValue > levelItemValue.value) {
+          lastLevelItem = levelItem;
+        } else {
+          leftHandItem = lastLevelItem;
           break;
         }
       }
-      if (i <= itemHeight - 1) {
-        let levelItemId = null;
-        if (leftItem === null) {
-          levelItemId = level.pushFront(item);
-        } else {
-          levelItemId = level.insertAfter(leftItem.id, item);
-        }
+      if (i <= itemHeight - 1 && leftHandItem !== null) {
+        const levelItemId = level.insertAfter(leftHandItem.id, item);
+        item.ids[i] = levelItemId;
         if (i === 0) {
           item.baseId = levelItemId;
-          this.frontId_ = levelItemId;
         }
       }
     }
+    return item.baseId;
   }
 
   addLevel_(value = null) {
