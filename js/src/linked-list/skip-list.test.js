@@ -29,7 +29,6 @@ describe('insert', () => {
 
   test('orders inserted items', () => {
     const list = new SkipList();
-    debugger;
     list.insert(20);
     list.insert(2);
     list.insert(5);
@@ -42,14 +41,37 @@ describe('insert', () => {
 
   test('scales express lanes with added items', () => {
     const list = new SkipList();
-    debugger;
     list.insert(65);
-    list.insert(55);
-    list.insert(45);
     list.insert(35);
+    list.insert(55);
     list.insert(25);
+    list.insert(45);
     list.insert(15);
     expect(list.lists_).toHaveLength(2);
   });
 
+});
+
+/**
+ * iterable protocol tests
+ */
+test('iterable protocol implementation returns items in order with for..of iteration', () => {
+  debugger;
+  const list = new SkipList();
+  const values = [5, 15, 25, 35, 45, 55, 65, 75, 85, 95];
+  list.insert(values[2]);
+  list.insert(values[5]);
+  list.insert(values[1]);
+  list.insert(values[0]);
+  list.insert(values[9]);
+  list.insert(values[6]);
+  list.insert(values[7]);
+  list.insert(values[8]);
+  list.insert(values[4]);
+  list.insert(values[3]);
+  const results = [];
+  for (let item of list) {
+    results.push(item.value.value);
+  }
+  expect(results).toStrictEqual(values);
 });

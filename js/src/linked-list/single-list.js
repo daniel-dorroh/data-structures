@@ -69,6 +69,9 @@ export class SingleList {
     }
     const listItem = this.create_(itemValue, referenceItem.next);
     const itemId = this.add_(listItem);
+    if (listItem.next === null) {
+      this.backId_ = itemId;
+    }
     referenceItem.next = itemId;
     return itemId;
   }

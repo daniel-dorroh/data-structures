@@ -1,4 +1,5 @@
 import { SingleList } from './single-list';
+import { ForwardIterator } from './forward-iterator';
 
 export class SkipList {
 
@@ -6,6 +7,14 @@ export class SkipList {
     this.lists_ = []
     this.addLevel_();
     this.frontId_ = null;
+  }
+
+  [Symbol.iterator]() {
+    return this.getIterator();
+  }
+
+  getIterator() {
+    return new ForwardIterator(this.getBaseList_());
   }
 
   maxHeight(itemAddedCount = 0) {
@@ -35,13 +44,15 @@ export class SkipList {
     if (!baseListSize || frontItem.value.value > itemValue) {
       this.frontId_ = baseList.pushFront(item);
       item.baseId = this.frontId_;
+      item.ids[0] = item.baseId;
       return item.baseId;
     }
-    let leftHandItem = null;
+    let leftHandItem = frontItem;
     // Search for spot in base list to insert
-    for (let i = this.lists_.length - 1; i === 0; i--) {
-      const level = this.lists_[i];
-      const levelIterator = level.getIterator(leftHandItem && leftHandItem.value.ids[i]);
+    let listIndex = this.lists_.length - 1;
+    while (true) {
+      const level = this.lists_[listIndex];
+      const levelIterator = new ForwardIterator(level, leftHandItem && leftHandItem.value.ids[listIndex]);
       let lastLevelItem = null;
       while (true) {
         const iteratorResult = levelIterator.next();
@@ -58,27 +69,27 @@ export class SkipList {
         if (itemValue > levelItemValue.value) {
           lastLevelItem = levelItem;
         } else {
-          leftHandItem = lastLevelItem;
           break;
         }
       }
-      if (i <= itemHeight - 1 && leftHandItem !== null) {
-        const levelItemId = level.insertAfter(leftHandItem.id, item);
-        item.ids[i] = levelItemId;
-        if (i === 0) {
+      leftHandItem = lastLevelItem;
+      if (listIndex <= itemHeight - 1 && leftHandItem !== null) {
+        let levelItemId = level.size() ? level.insertAfter(leftHandItem.id, item) : level.pushFront(item);
+        item.ids[listIndex] = levelItemId;
+        if (listIndex === 0) {
           item.baseId = levelItemId;
         }
+      }
+      if (--listIndex < 0) {
+        break;
       }
     }
     return item.baseId;
   }
 
-  addLevel_(value = null) {
+  addLevel_() {
     const list = new SingleList();
     this.lists_.push(list);
-    if (value !== null) {
-      list.pushFront(value);
-    }
   }
 
   removeLevel_() {
@@ -86,7 +97,7 @@ export class SkipList {
   }
 
   getBaseList_() {
-    return this.lists_[this.lists_.length - 1];
+    return this.lists_[0];
   }
 
   getItemHeight_() {
@@ -104,6 +115,7 @@ export class SkipList {
       }
       itemLevelCount++;
     }
+    return itemLevelCount;
   }
 
   nextMaxHeight_() {
