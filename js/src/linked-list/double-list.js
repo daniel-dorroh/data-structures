@@ -26,6 +26,7 @@ export class DoubleList extends SingleList {
     return itemId;
   }
 
+  // TODO: add test and fix up frontId and backId in insert methods
   insertBefore(referenceItemId, itemValue) {
     const referenceItem = this.get(referenceItemId);
     if (referenceItem === null) {
