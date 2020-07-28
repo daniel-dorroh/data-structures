@@ -28,7 +28,7 @@ export class SkipList {
 
   insert(itemValue) {
     // Get level of item and add any levels if possible given new size.
-    const itemHeight = this.getItemHeight_();
+    const itemHeight = this.calculateItemHeight_();
 
     const item = {
       value: itemValue,
@@ -100,22 +100,19 @@ export class SkipList {
     return this.lists_[0];
   }
 
-  getItemHeight_() {
-    let itemLevelCount = 1;
+  calculateItemHeight_() {
+    let height = 1;
     const nextMaxHeight = this.nextMaxHeight_();
-    if (nextMaxHeight == 1) {
-      return itemLevelCount;
+    if (nextMaxHeight === height) {
+      return height;
     }
     if (nextMaxHeight > this.maxHeight()) {
       this.addLevel_();
     }
-    for (let i = 1; i < nextMaxHeight; i++) {
-      if (Math.random() < 0.5) {
-        return itemLevelCount;
-      }
-      itemLevelCount++;
+    for (let i = 1; i < nextMaxHeight && Math.random() >= 0.5; i++) {
+      height++;
     }
-    return itemLevelCount;
+    return height;
   }
 
   nextMaxHeight_() {
