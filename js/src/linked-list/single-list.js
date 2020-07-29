@@ -45,6 +45,14 @@ export class SingleList {
     return this.list_[this.frontId_];
   }
 
+  getIterable(initialItemId) {
+    return {
+      [Symbol.iterator]: () => {
+        return new ForwardIterator(this, initialItemId);
+      }
+    }
+  }
+
   getIterator() {
     return new ForwardIterator(this);
   }
