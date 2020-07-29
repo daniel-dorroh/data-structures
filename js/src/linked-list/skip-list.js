@@ -43,6 +43,15 @@ export class SkipList {
       return item.baseId;
     }
     // begin search from the highest level and move down to the base list
+    // search and insertion looks something like
+    // ---- insert 34, height 2 ------------------------------
+    // 5 |-----           46           <- level 4 not inserted
+    // 5   10 |-----      46           <- level 3 not inserted
+    // 5   10   20 |--- * 46        99 <- level 2     inserted
+    // 5   10   20   29 * 46   76   99 <- base list   inserted
+    //                  ^
+    //           insertion point
+    // -------------------------------------------------------
     let leftHandItem = sentinelFrontItem;
     let listIndex = this.lists_.length - 1;
     while (true) {
