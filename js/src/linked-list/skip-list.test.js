@@ -56,7 +56,6 @@ describe('insert', () => {
  * iterable protocol tests
  */
 test('iterable protocol implementation returns items in order with for..of iteration', () => {
-  debugger;
   const list = new SkipList();
   const values = [5, 15, 25, 35, 45, 55, 65, 75, 85, 95];
   list.insert(values[2]);

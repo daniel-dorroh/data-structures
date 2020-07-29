@@ -17,9 +17,9 @@ export class SkipList {
     return new ForwardIterator(this.getBaseList_());
   }
 
-  maxHeight(itemAddedCount = 0) {
+  maxHeight(addedItemCount = 0) {
     const baseList = this.getBaseList_();
-    const size = baseList.size() + itemAddedCount;
+    const size = baseList.size() + addedItemCount;
     if (size <= 1) {
       return 1;
     }
@@ -27,54 +27,41 @@ export class SkipList {
   }
 
   insert(itemValue) {
-    // Get level of item and add any levels if possible given new size.
+    // get height of item and add a new level if necessary
     const itemHeight = this.calculateItemHeight_();
-
     const item = {
       value: itemValue,
       baseId: null,
       ids: {},
     };
     const baseList = this.getBaseList_();
-
-    // Insert front for empty list
-    // Insert front for value less than front
-    const baseListSize = baseList.size();
-    const frontItem = baseListSize ? baseList.getFront() : null;
-    if (!baseListSize || frontItem.value.value > itemValue) {
+    const sentinelFrontItem = baseList.size() ? baseList.getFront() : null;
+    if (!baseList.size() || itemValue < sentinelFrontItem.value.value) {
       this.frontId_ = baseList.pushFront(item);
       item.baseId = this.frontId_;
       item.ids[0] = item.baseId;
       return item.baseId;
     }
-    let leftHandItem = frontItem;
-    // Search for spot in base list to insert
+    // begin search from the highest level and move down to the base list
+    let leftHandItem = sentinelFrontItem;
     let listIndex = this.lists_.length - 1;
     while (true) {
       const level = this.lists_[listIndex];
-      const levelIterator = new ForwardIterator(level, leftHandItem && leftHandItem.value.ids[listIndex]);
-      let lastLevelItem = null;
-      while (true) {
-        const iteratorResult = levelIterator.next();
-        if (iteratorResult.done) {
-          break;
-        }
-        // TODO: come up with better names for
-        // - level
-        // - levelItem
-        // - levelItemValue
-        // values are { value, baseId, ids }
-        const levelItem = iteratorResult.value;
-        const levelItemValue = levelItem.value;
-        if (itemValue > levelItemValue.value) {
-          lastLevelItem = levelItem;
+      let insertionPointFound = false;
+      for (let levelItem of level.getIterable(leftHandItem && leftHandItem.value.ids[listIndex])) {
+        if (itemValue > levelItem.value.value) {
+          leftHandItem = levelItem;
+          insertionPointFound = true;
         } else {
           break;
         }
       }
-      leftHandItem = lastLevelItem;
-      if (listIndex <= itemHeight - 1 && leftHandItem !== null) {
-        let levelItemId = level.size() ? level.insertAfter(leftHandItem.id, item) : level.pushFront(item);
+      // if the item rolled a height that includes this level,
+      // insert the item
+      if (listIndex <= itemHeight - 1) {
+        let levelItemId = insertionPointFound
+            ? level.insertAfter(leftHandItem.id, item)
+            : level.pushFront(item);
         item.ids[listIndex] = levelItemId;
         if (listIndex === 0) {
           item.baseId = levelItemId;
