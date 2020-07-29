@@ -14,7 +14,7 @@ test('constructor makes a new SkipList', () => {
 test.each([
   { size: 0, maxHeight: 1 },
   { size: 1, maxHeight: 1 },
-  { size: 5, maxHeight: 2 },
+  { size: 4, maxHeight: 2 },
   { size: 1000, maxHeight: 9 },
   { size: 10000, maxHeight: 13 }])('maxHeight scales with list size', (args) => {
     const list = new SkipList();
@@ -32,7 +32,7 @@ describe('insert', () => {
     list.insert(20);
     list.insert(2);
     list.insert(5);
-    expect(list.lists_).toHaveLength(1);
+    expect(list.levels_).toHaveLength(1);
     const baseList = list.getBaseList_();
     expect(baseList.getFront().value.value).toBe(2);
     expect(baseList.get(baseList.getFront().next).value.value).toBe(5);
@@ -47,7 +47,14 @@ describe('insert', () => {
     list.insert(25);
     list.insert(45);
     list.insert(15);
-    expect(list.lists_).toHaveLength(2);
+    expect(list.levels_).toHaveLength(2);
+  });
+
+  test('inserts two items of the same value', () => {
+    const list = new SkipList();
+    list.insert(25);
+    list.insert(25);
+    expect(list.size()).toBe(2);
   });
 
 });
@@ -73,4 +80,29 @@ test('iterable protocol implementation returns items in order with for..of itera
     results.push(item.value.value);
   }
   expect(results).toStrictEqual(values);
+});
+
+/**
+ * delete tests
+ */
+describe('delete', () => {
+
+  test('updates frontId', () => {
+    const list = new SkipList();
+    const itemId = list.insert(25);
+    list.delete(itemId);
+    expect(list.levels_).toHaveLength(1);
+    expect(list.frontId_).toBeNull();
+  });
+
+  test('removes excess levels', () => {
+    const list = new SkipList();
+    const itemId = list.insert(15);
+    list.insert(35);
+    list.insert(45);
+    list.insert(55);
+    list.delete(itemId);
+    expect(list.levels_).toHaveLength(1);
+  });
+
 });
