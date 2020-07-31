@@ -11,15 +11,30 @@ test('constructor makes a new SkipList', () => {
 /**
  * maxHeight tests
  */
-test.each([
-  { size: 0, maxHeight: 1 },
-  { size: 1, maxHeight: 1 },
-  { size: 4, maxHeight: 2 },
-  { size: 1000, maxHeight: 9 },
-  { size: 10000, maxHeight: 13 }])('maxHeight scales with list size', (args) => {
-    const list = new SkipList();
-    list.size_ = args.size;
-    expect(list.maxHeight()).toBe(args.maxHeight);
+describe('maxHeight', () => {
+
+  const heightTestArgs = [
+    { size: 0, maxHeight: 1 },
+    { size: 1, maxHeight: 1 },
+    { size: 4, maxHeight: 2 },
+    { size: 1000, maxHeight: 9 },
+    { size: 10000, maxHeight: 13 }
+  ];
+
+  test.each(heightTestArgs)('scales with list size', (args) => {
+      const list = new SkipList();
+      list.size_ = args.size;
+      expect(list.maxHeight()).toBe(args.maxHeight);
+  });
+
+  test.each(heightTestArgs)('calling with additionalItemCount returns expected height', (args) => {
+      expect(new SkipList().maxHeight(args.size)).toBe(args.maxHeight);
+  });
+
+  test('calling with negative additionalItemCount returns expected height', () => {
+    expect(new SkipList().maxHeight(-5)).toBe(1);
+  });
+
 });
 
 /**
