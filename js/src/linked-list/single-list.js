@@ -57,6 +57,11 @@ export class SingleList {
     return new ForwardIterator(this);
   }
 
+  getValue(itemId) {
+    const item = this.get(itemId);
+    return item && item.value;
+  }
+
   pushBack(itemValue) {
     const listItem = this.create_(itemValue, null);
     const itemId = this.add_(listItem);
@@ -108,8 +113,8 @@ export class SingleList {
       }
       previousItem = item;
     }
-    this.connect_(previousItem, nextItem);
     this.remove_(itemId);
+    this.connect_(previousItem, nextItem);
   }
 
   add_(listItem) {

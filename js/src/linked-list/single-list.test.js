@@ -174,6 +174,27 @@ test('get with invalid id returns null', () => {
 });
 
 /**
+ * getValue tests
+ */
+describe('getValue', () => {
+
+  test('returns the inserted value without list metadata', () => {
+    const list = new SingleList();
+    const value = 25;
+    const itemId = list.pushBack(value);
+    expect(list.getValue(itemId)).toBe(value);
+  });
+
+  test('returns null for nonexistent itemId', () => {
+    const list = new SingleList();
+    const value = 25;
+    const itemId = list.pushBack(value);
+    expect(list.getValue(itemId + 1)).toBeNull();
+  });
+
+});
+
+/**
  * delete tests
  */
 test('delete removes only item', () => {
