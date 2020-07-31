@@ -133,6 +133,7 @@ test('insertAfter adds item to end of list', () => {
   expect(item2.previous).toBe(item1Id);
   expect(item2.next).toBeNull();
   expect(list.size()).toBe(2);
+  expect(list.backId_).toBe(item2Id);
 });
 
 test('insertAfter an item after a deletion and id is recycled', () => {
@@ -177,7 +178,8 @@ test('insertBefore adds item to beginning of list', () => {
   const item1 = list.get(item1Id);
   expect(item1.previous).toBeNull();
   expect(item1.next).toBe(item2Id);
-  expect(list.size()).toBe(2);DoubleList
+  expect(list.size()).toBe(2);
+  expect(list.frontId_).toBe(item1Id);
 });
 
 test('insertBefore an item after a deletion and id is recycled', () => {

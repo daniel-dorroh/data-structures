@@ -82,7 +82,7 @@ test('pushFront an item after a deletion and id is recycled', () => {
  */
 test('insertAfter with invalid referenceItemId throws', () => {
   expect(() => new SingleList().insertAfter(0, 25))
-      .toThrow('itemId specified does not exist');
+      .toThrow('itemId "0" specified does not exist');
 });
 
 test('insertAfter adds item to list between two items', () => {
@@ -103,6 +103,7 @@ test('insertAfter adds item to end of list', () => {
   expect(list.get(item1Id).next).toBe(item2Id);
   expect(list.get(item2Id).next).toBeNull();
   expect(list.size()).toBe(2);
+  expect(list.backId_).toBe(item2Id);
 });
 
 test('insertAfter an item after a deletion and id is recycled', () => {

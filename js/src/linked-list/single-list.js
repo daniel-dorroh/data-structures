@@ -78,7 +78,7 @@ export class SingleList {
   insertAfter(referenceItemId, itemValue) {
     const referenceItem = this.get(referenceItemId);
     if (referenceItem === null) {
-      throw 'itemId specified does not exist';
+      throw `itemId "${referenceItemId}" specified does not exist`;
     }
     const listItem = this.create_(itemValue, referenceItem.next);
     const itemId = this.add_(listItem);
