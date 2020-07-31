@@ -1,51 +1,19 @@
 import { SingleList } from './single-list';
-import { ForwardIterator } from './forward-iterator';
 
-export class SkipList {
+export class SkipList extends SingleList {
 
   constructor() {
-    this.levels_ = []
-    this.addLevel_();
-    this.frontId_ = null;
-  }
-
-  [Symbol.iterator]() {
-    return this.getIterator();
-  }
-
-  getIterator() {
-    return new ForwardIterator(this.getBaseList_());
-  }
-
-  size() {
-    return this.getBaseList_().size();
+    super();
+    this.levels_ = [];
+    this.levels_.push(this);
   }
 
   maxHeight(addedItemCount = 0) {
-    const baseList = this.getBaseList_();
-    const size = baseList.size() + addedItemCount;
-    if (size <= 1) {
+    const newSize = this.size() + addedItemCount;
+    if (newSize <= 1) {
       return 1;
     }
-    return Math.floor(Math.log2(size));
-  }
-
-  get(itemId) {
-    if (itemId === null || itemId === undefined) {
-      return null;
-    }
-    if (typeof itemId !== 'number') {
-      throw `id was ${typeof itemId}, but it must be a number`;
-    }
-    if (!Number.isInteger(itemId)) {
-      throw 'id was not an integer';
-    }
-    const baseList = this.getBaseList_();
-    // TODO: expose a method on SingleList to check if ID is within list.
-    if (itemId > baseList.list_.length - 1) {
-      return null;
-    }
-    return baseList.get(itemId);
+    return Math.floor(Math.log2(newSize));
   }
 
   insert(itemValue) {
@@ -56,12 +24,11 @@ export class SkipList {
       baseId: null,
       ids: {},
     };
-    const baseList = this.getBaseList_();
     // the front item is not actually part of the level lists other than
     // base list, but it is treated as though it is in all of them.
-    const sentinelFrontItem = baseList.size() ? baseList.getFront() : null;
-    if (!baseList.size() || itemValue < sentinelFrontItem.value.value) {
-      this.frontId_ = baseList.pushFront(item);
+    const sentinelFrontItem = this.size() ? this.getFront() : null;
+    if (!this.size() || itemValue < sentinelFrontItem.value.value) {
+      this.frontId_ = this.pushFront(item);
       item.baseId = this.frontId_;
       item.ids[0] = item.baseId;
       return item.baseId;
@@ -107,35 +74,9 @@ export class SkipList {
     return item.baseId;
   }
 
-  delete(itemId) {
-    let previousItem = null;
-    let nextItem = null;
-    const searchedItem = this.get(itemId);
-    if (searchedItem === null) {
-      return;
-    }
-    for (let item of this) {
-      if (itemId === item.id) {
-        nextItem = this.get(item.next);
-        break;
-      }
-      previousItem = item;
-    }
-    this.updateFrontId_(previousItem, nextItem);
-    this.remove_(searchedItem);
-  }
-
   addLevel_() {
     const list = new SingleList();
     this.levels_.push(list);
-  }
-
-  removeLevel_() {
-    this.levels_.pop();
-  }
-
-  getBaseList_() {
-    return this.levels_[0];
   }
 
   calculateItemHeight_() {
@@ -153,25 +94,21 @@ export class SkipList {
     return height;
   }
 
-  nextMaxHeight_() {
-    return this.maxHeight(1);
+  removeLevel_() {
+    this.levels_.pop();
   }
 
-  updateFrontId_(previousListItem, nextListItem) {
-    if (previousListItem === null && nextListItem === null) {
-      this.frontId_ = null;
-    } else if (previousListItem === null) {
-      this.frontId_ = nextListItem.id;
-    }
-  }
-
-  remove_(item) {
+  remove_(itemId) {
+    const itemValue = this.getValue(itemId);
     if (this.maxHeight() > this.maxHeight(-1)) {
       this.removeLevel_();
     }
-    for (const [levelId, itemId] of Object.entries(item.value.ids)) {
-      this.levels_[levelId].delete(itemId);
+    for (const [levelId, itemId] of Object.entries(itemValue.ids)) {
+      if (levelId > 0) {
+        this.levels_[levelId].delete(itemId);
+      }
     }
+    super.remove_(itemId);
   }
 
 }
