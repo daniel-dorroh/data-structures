@@ -1,0 +1,250 @@
+import { HashTable } from './hash-table';
+
+/**
+ * constructor tests
+ */
+
+describe('constructor', () => {
+
+  test.each([0, -1])('throws if binCount is an invalid value', (invalidBinCount) => {
+    expect(() => new HashTable(invalidBinCount))
+        .toThrow(`${invalidBinCount} is less than 1, the minimum number of bins`);
+  });
+
+  test('creates a new HashTable', () => {
+    expect(new HashTable()).toBeDefined();
+  });
+
+  test('creates a HashTable with the minimum number of bins', () => {
+    const table = new HashTable(1);
+    table.add(25, 'twenty-five');
+    table.add(35, 'thirty-five');
+    expect(table.storage_).toHaveLength(1);
+  });
+
+});
+
+/**
+ * hashInteger_ tests
+ */
+describe('hashInteger_', () => {
+
+  test('throws when key larger than max', () => {
+    const key = Math.pow(2, 32);
+    const table = new HashTable();
+    expect(() => table.hashInteger_(key))
+        .toThrow(`key '${key}' is larger than the maximum supported integer key of '${table.maxIntValue_}'`);
+  });
+
+  test.each([1.233, [], {}, null, undefined])('throws when key is not an integer', (key) => {
+    expect(() => new HashTable().hashInteger_(key))
+        .toThrow(`key '${key}' is not an integer`);
+  });
+
+  // Long running test
+  // TODO: uncomment the following test to test for hash uniqueness
+  // test('produces unique hashes within 0.5% tolerance for ~1,000,000 random integers', () => {
+  //   const hashUniquenessTolerance = 0.005;
+  //   const table = new HashTable();
+  //   const hashValues = new Set();
+  //   const testInputs = new Set();
+  //   for (let i = 0; i < 1_000_000; i++) {
+  //     const testInput = Math.floor(Math.random() * (Math.pow(2, 32) - 1));
+  //     testInputs.add(testInput);
+  //     hashValues.add(table.hashInteger_(testInput));
+  //   }
+  //   expect(hashValues.size).toBeGreaterThan(testInputs.size * (1.0 - hashUniquenessTolerance));
+  //   expect(hashValues.size).toBeLessThan(testInputs.size * (1.0 + hashUniquenessTolerance));
+  // });
+
+});
+
+/**
+ * hashString_ tests
+ */
+describe('hashString_', () => {
+
+  test.each([1.233, [], {}, null, undefined])('throws when key is not a string', (key) => {
+    expect(() => new HashTable().hashString_(key))
+        .toThrow(`key '${key}' is not a string`);
+  });
+
+  test('throws on empty string', () => {
+    expect(() => new HashTable().hashString_(''))
+        .toThrow('string key is empty and cannot be hashed');
+  });
+
+  // Long running test
+  // TODO: uncomment the following test to test for hash uniqueness
+  // test('produces unique hashes within 0.5% tolerance for ~1,000,000 random 9 character strings', () => {
+  //   const hashUniquenessTolerance = 0.005;
+  //   const table = new HashTable();
+  //   const hashValues = new Set();
+  //   const testInputs = new Set();
+  //   for (let i = 0; i < 1_000_000; i++) {
+  //     let testInput = "";
+  //     for (let j = 0; j < Math.floor(Math.random() * 8) + 1; j++) {
+  //       testInput += String.fromCharCode(Math.floor(Math.random() * (Math.pow(2, 32) - 1)));
+  //     }
+  //     testInputs.add(testInput);
+  //     hashValues.add(table.hashString_(testInput));
+  //   }
+  //   expect(hashValues.size).toBeGreaterThan(testInputs.size * (1.0 - hashUniquenessTolerance));
+  //   expect(hashValues.size).toBeLessThan(testInputs.size * (1.0 + hashUniquenessTolerance));
+  // });
+
+});
+
+/**
+ * hash tests
+ */
+describe('hash', () => {
+
+  const hashKeys = [25, 25.1212, 'twenty-five', [], {}, { a: 25 }];
+
+  test.each(hashKeys)('produces valid hash for input', (key) => {
+    const hash = new HashTable().hash(key);
+    expect(hash).toBeGreaterThan(0);
+    expect(hash).toBeLessThan(Math.pow(2, 32));
+    expect(Number.isInteger(hash)).toBe(true);
+  });
+
+  test.each([null, undefined])('throws if null or undefined', (key) => {
+    expect(() => new HashTable().hash(key)).toThrow(`key is ${key}`);
+  });
+
+  test.each(hashKeys)('produces same hash for unchanging input', (key) => {
+    const table = new HashTable();
+    const hash1 = table.hash(key);
+    const hash2 = table.hash(key);
+    expect(hash1).toStrictEqual(hash2);
+  });
+
+  test('produces different hash for two objects with same properties and different values', () => {
+    const table = new HashTable();
+    const key1 = { a: 1, b: 'two', c: [3] };
+    const key2 = { a: 4, b: 'five', c: [6] };
+    const hash1 = table.hash(key1);
+    const hash2 = table.hash(key2);
+    expect(hash1).not.toStrictEqual(hash2);
+  });
+
+  test('hashes int that is larger than 2^32', () => {
+    const table = new HashTable();
+    expect(table.hash(Math.pow(2, 33))).toBeDefined();
+  });
+
+  describe('when hash collisions happen', () => {
+
+    let table1, table2;
+    let hashValues, testInputs, collisionKeys;
+    let isKeyFound, binIndex;
+
+    beforeEach(() => {
+
+      table1 = new HashTable();
+      table2 = new HashTable();
+      hashValues = new Set();
+      testInputs = {};
+      collisionKeys = [];
+      isKeyFound = false;
+      binIndex = null;
+      while (true) {
+        const key = Math.floor(Math.random() * (Math.pow(2, 32) - 1));
+        const hash = table1.hash(key);
+        if (isKeyFound && hash % table1.binCount_ === binIndex) {
+          collisionKeys.push(key);
+          break;
+        }
+        if (!isKeyFound && hashValues.has(hash) && key !== testInputs[hash]) {
+          collisionKeys.push(key);
+          collisionKeys.push(testInputs[hash]);
+          isKeyFound = true;
+          binIndex = hash % table1.binCount_;
+        }
+        testInputs[hash] = key;
+        hashValues.add(hash);
+      }
+
+    });
+
+    test('different hash tables produce different hash results', () => {
+      expect(table1.hash(collisionKeys[0])).toStrictEqual(table1.hash(collisionKeys[1]));
+      expect(table2.hash(collisionKeys[0])).not.toStrictEqual(table2.hash(collisionKeys[1]));
+    });
+
+    test('table handles collision by adding bin table', () => {
+      const value1 = 25;
+      const value2 = 35;
+      const key1 = collisionKeys[0];
+      const key2 = collisionKeys[1];
+      table1.add(key1, value1);
+      table1.add(key2, value2);
+      const binTable = table1.storage_[binIndex];
+      expect(typeof binTable.get).toBe('function');
+      expect(binTable.get(key1)).not.toStrictEqual(binTable.get(key2));
+      expect(table1.get(key1)).toBe(value1);
+      expect(table1.get(key2)).toBe(value2);
+    });
+
+    test('3rd or more item is added to the bin table ', () => {
+      const value1 = 25;
+      const value2 = 35;
+      const value3 = 45;
+      const key1 = collisionKeys[0];
+      const key2 = collisionKeys[1];
+      const key3 = collisionKeys[2];
+      table1.add(key1, value1);
+      table1.add(key2, value2);
+      table1.add(key3, value3);
+      const binTable = table1.storage_[binIndex];
+      expect(binTable.get(key3)).toBe(value3);
+    });
+
+  });
+
+});
+
+/**
+ * get tests
+ */
+describe('get', () => {
+
+  test.each([null, undefined])('throws for null or undefined key', (key) => {
+    expect(() => new HashTable().get(key)).toThrow(`key is ${key}`);
+  });
+
+  test('returns null for unknown key', () => {
+    expect(new HashTable().get(25)).toBeNull();
+  });
+
+  test('returns value for key', () => {
+    const table = new HashTable();
+    const key = 25;
+    const value = 35;
+    table.add(key, value);
+    expect(table.get(key)).toBe(value);
+  });
+
+});
+
+/**
+ * add tests
+ */
+describe('add', () => {
+
+  test.each([null, undefined])('throws for null or undefined key', (key) => {
+    expect(() => new HashTable().add(key, 25)).toThrow(`key is ${key}`);
+  });
+
+  test.each([25, 25.1212, 'twenty-five', [], {}, { a: 25 }])('replaces value if same key is used twice', (key) => {
+    const table = new HashTable();
+    const finalValue = 45;
+    table.add(key, 35);
+    table.add(key, finalValue);
+    expect(table.get(key)).toStrictEqual(finalValue);
+  });
+
+});
+
+
