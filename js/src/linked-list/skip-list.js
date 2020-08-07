@@ -17,6 +17,9 @@ export class SkipList extends SingleList {
   }
 
   insert(itemValue) {
+    if (typeof itemValue !== 'number') {
+      throw `type of '${itemValue}' is not a number`;
+    }
     // get height of item and add a new level if necessary
     const itemHeight = this.calculateItemHeight_();
     const item = {

@@ -42,6 +42,11 @@ describe('maxHeight', () => {
  */
 describe('insert', () => {
 
+  test.each(["25", [], {}, null, undefined])('throws if value is not a number', (value) => {
+    const list = new SkipList();
+    expect(() => list.insert(value)).toThrow(`type of '${value}' is not a number`);
+  });
+
   test('orders inserted items', () => {
     const list = new SkipList();
     list.insert(20);
