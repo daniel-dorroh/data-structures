@@ -1,4 +1,4 @@
-# data-structures
+# Data Structures
 
 I had never implemented my own data structures before,
 so I wanted to take the opportunity given the extra 
