@@ -1,45 +1,45 @@
 
 export class ForwardIterator {
 
-  constructor(list, initialElementId = null) {
-    if (typeof list.getFront !== 'function'
-        || typeof list.get !== 'function') {
+  constructor(items, initialItemId = null) {
+    if (typeof items.getFront !== 'function'
+        || typeof items.get !== 'function') {
       throw 'list does not have get and/or getFront methods';
     }
-    this.list_ = list;
-    this.currentElement_ = null;
-    this.isFirstElement_ = true;
-    this.isLastElement_ = false;
-    if (list.size() > 0 && initialElementId !== null) {
-      this.currentElement_ = list.get(initialElementId);
+    this.items_ = items;
+    this.currentItem = null;
+    this.isFirstItem = true;
+    this.isLastItem = false;
+    if (items.size() > 0 && initialItemId !== null) {
+      this.currentItem = items.get(initialItemId);
     }
   }
 
   next() {
-    if (this.list_.size() === 0 || this.isLastElement_) {
+    if (this.items_.size() === 0 || this.isLastItem) {
       return { done: true };
     }
-    if (this.isInMiddleOfList_()) {
-      this.currentElement_ = this.list_.get(this.currentElement_.next);
-    } else if (this.isAtBeginningOfList_()) {
-      this.currentElement_ = this.list_.getFront();
+    if (this.isInside()) {
+      this.currentItem = this.items_.get(this.currentItem.next);
+    } else if (this.isBeginning_()) {
+      this.currentItem = this.items_.getFront();
     }
-    if (this.isFirstElement_) {
-      this.isFirstElement_ = false;
+    if (this.isFirstItem) {
+      this.isFirstItem = false;
     }
-    this.isLastElement_ = this.currentElement_.next === null;
+    this.isLastItem = this.currentItem.next === null;
     return {
-      value: this.currentElement_,
+      value: this.currentItem,
       done: false,
     }
   }
 
-  isInMiddleOfList_() {
-    return !this.isFirstElement_ && this.currentElement_ !== null;
+  isInside() {
+    return !this.isFirstItem && this.currentItem !== null;
   }
 
-  isAtBeginningOfList_() {
-    return this.currentElement_ === null;
+  isBeginning_() {
+    return this.currentItem === null;
   }
 
 }
