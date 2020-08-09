@@ -6,7 +6,7 @@ import { Stack } from './stack';
 test('constructor makes a stack', () => {
   const stack = new Stack();
   expect(stack).toBeDefined();
-  expect(stack.stack_).toHaveLength(0);
+  expect(stack.items_).toHaveLength(0);
 });
 
 /**
@@ -20,8 +20,8 @@ test('push item and item added to stack', () => {
   const stack = new Stack();
   const item = 40;
   stack.push(item);
-  expect(stack.stack_).toHaveLength(1);
-  expect(stack.stack_[0]).toBe(item);
+  expect(stack.items_).toHaveLength(1);
+  expect(stack.items_[0]).toBe(item);
 });
 
 /**
