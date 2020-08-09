@@ -1,21 +1,20 @@
 import { ForwardIterator } from './forward-iterator';
+import { DenseRepository } from '../utility/dense-repository';
 
 export class SingleList {
 
   constructor() {
-    this.list_ = [];
-    this.size_ = 0;
+    this.items_ = new DenseRepository();
     this.frontId_ = null;
     this.backId_ = null;
-    this.freedIds_ = [];
   }
 
   isEmpty() {
-    return !this.size_;
+    return !this.items_.size();
   }
 
   size() {
-    return this.size_;
+    return this.items_.size();
   }
 
   [Symbol.iterator]() {
@@ -32,17 +31,17 @@ export class SingleList {
     if (!Number.isInteger(itemId)) {
       throw 'id was not an integer';
     }
-    if (itemId > this.list_.length - 1) {
+    if (!this.items_.contains(itemId)) {
       return null;
     }
-    return this.list_[itemId];
+    return this.items_.get(itemId);
   }
 
   getFront() {
     if (this.frontId_ === null) {
       throw 'the front item does not exist';
     }
-    return this.list_[this.frontId_];
+    return this.items_.get(this.frontId_);
   }
 
   getIterable(initialItemId) {
@@ -64,9 +63,9 @@ export class SingleList {
 
   pushBack(itemValue) {
     const listItem = this.create_(itemValue, null);
-    const itemId = this.add_(listItem);
+    const itemId = this.items_.add(listItem);
     if (this.backId_ !== null) {
-      this.list_[this.backId_].next = itemId;
+      this.items_.get(this.backId_).next = itemId;
     }
     this.backId_ = itemId;
     if (this.frontId_ === null) {
@@ -81,7 +80,7 @@ export class SingleList {
       throw `itemId "${referenceItemId}" specified does not exist`;
     }
     const listItem = this.create_(itemValue, referenceItem.next);
-    const itemId = this.add_(listItem);
+    const itemId = this.items_.add(listItem);
     if (listItem.next === null) {
       this.backId_ = itemId;
     }
@@ -91,7 +90,7 @@ export class SingleList {
 
   pushFront(itemValue) {
     const listItem = this.create_(itemValue, this.frontId_);
-    const itemId = this.add_(listItem);
+    const itemId = this.items_.add(listItem);
     this.frontId_ = itemId;
     if (this.backId_ === null) {
       this.backId_ = itemId;
@@ -117,19 +116,6 @@ export class SingleList {
     this.connect_(previousItem, nextItem);
   }
 
-  add_(listItem) {
-    let itemId = null;
-    if (this.freedIds_.length) {
-      itemId = this.freedIds_.pop();
-      this.list_[itemId] = listItem;
-    } else {
-      itemId = this.list_.push(listItem) - 1;
-    }
-    listItem.id = itemId;
-    this.size_++;
-    return itemId;
-  }
-
   connect_(previousListItem, nextListItem) {
     if (previousListItem === null && nextListItem === null) {
       this.frontId_ = null;
@@ -153,9 +139,7 @@ export class SingleList {
   }
 
   remove_(itemId) {
-    this.list_[itemId] = null;
-    this.freedIds_.push(itemId);
-    this.size_--;
+    this.items_.remove(itemId);
   }
 
 }

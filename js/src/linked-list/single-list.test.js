@@ -6,7 +6,7 @@ import { SingleList } from './single-list';
 test('constructor makes a list', () => {
   const list = new SingleList();
   expect(list).toBeDefined();
-  expect(list.list_).toHaveLength(0);
+  expect(list.size()).toBe(0);
 });
 
 /**
@@ -272,13 +272,6 @@ describe('delete', () => {
     const itemId = list.pushBack(25);
     list.delete(itemId + 1);
     expect(list.size()).toBe(1);
-  });
-
-  test('adds freed id', () => {
-    const list = new SingleList();
-    const itemId = list.pushBack(25);
-    list.delete(itemId);
-    expect(list.freedIds_).toStrictEqual([itemId]);
   });
 
 });

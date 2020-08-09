@@ -10,14 +10,14 @@ export class DoubleList extends SingleList {
     if (this.backId_ === null) {
       throw 'the back item does not exist';
     }
-    return this.list_[this.backId_];
+    return this.items_.get(this.backId_);
   }
 
   pushBack(itemValue) {
     const listItem = this.create_(itemValue, this.backId_, null);
-    const itemId = this.add_(listItem);
+    const itemId = this.items_.add(listItem);
     if (this.backId_ !== null) {
-      this.list_[this.backId_].next = itemId;
+      this.items_.get(this.backId_).next = itemId;
     }
     this.backId_ = itemId;
     if (this.frontId_ === null) {
@@ -32,7 +32,7 @@ export class DoubleList extends SingleList {
       throw 'itemId specified does not exist';
     }
     const listItem = this.create_(itemValue, referenceItem.previous, referenceItemId);
-    const itemId = this.add_(listItem);
+    const itemId = this.items_.add(listItem);
     if (referenceItem.previous !== null) {
       const previousItem = this.get(referenceItem.previous);
       previousItem.next = itemId;
@@ -49,7 +49,7 @@ export class DoubleList extends SingleList {
       throw 'itemId specified does not exist';
     }
     const listItem = this.create_(itemValue, referenceItemId, referenceItem.next);
-    const itemId = this.add_(listItem);
+    const itemId = this.items_.add(listItem);
     if (referenceItem.next !== null) {
       const nextItem = this.get(referenceItem.next);
       nextItem.previous = itemId;
@@ -62,9 +62,9 @@ export class DoubleList extends SingleList {
 
   pushFront(itemValue) {
     const listItem = this.create_(itemValue, null, this.frontId_);
-    const itemId = this.add_(listItem);
+    const itemId = this.items_.add(listItem);
     if (this.frontId_ !== null) {
-      this.list_[this.frontId_].previous = itemId;
+      this.items_.get(this.frontId_).previous = itemId;
     }
     this.frontId_ = itemId;
     if (this.backId_ === null) {
@@ -81,7 +81,7 @@ export class DoubleList extends SingleList {
     let previousItem = this.get(searchedItem.previous);
     let nextItem = this.get(searchedItem.next);
     this.connect_(previousItem, nextItem);
-    this.remove_(itemId);
+    this.items_.remove(itemId);
   }
 
   connect_(previousListItem, nextListItem) {

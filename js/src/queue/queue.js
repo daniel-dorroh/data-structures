@@ -3,33 +3,33 @@ import { DoubleList } from '../linked-list/double-list';
 export class Queue {
 
   constructor() {
-    this.queue_ = new DoubleList();
+    this.items_ = new DoubleList();
   }
 
   size() {
-    return this.queue_.size();
+    return this.items_.size();
   }
 
   enqueue(itemValue) {
     if (itemValue === undefined || itemValue === null) {
       throw `item value was ${itemValue}`;
     }
-    this.queue_.pushBack(itemValue);
+    this.items_.pushBack(itemValue);
   }
 
   peek() {
     if (!this.size()) {
       return null;
     }
-    return this.queue_.getFront().value;
+    return this.items_.getFront().value;
   }
 
   dequeue() {
     if (!this.size()) {
       return null;
     }
-    const item = this.queue_.getFront();
-    this.queue_.delete(item.id);
+    const item = this.items_.getFront();
+    this.items_.delete(item.id);
     return item.value;
   }
 

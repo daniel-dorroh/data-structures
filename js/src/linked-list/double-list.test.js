@@ -248,10 +248,3 @@ test('delete does nothing when item id does not exist', () => {
   list.delete(itemId + 1);
   expect(list.size()).toBe(1);
 });
-
-test('delete adds freed id', () => {
-  const list = new DoubleList();
-  const itemId = list.pushBack(25);
-  list.delete(itemId);
-  expect(list.freedIds_).toStrictEqual([itemId]);
-});

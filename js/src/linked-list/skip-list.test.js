@@ -23,7 +23,7 @@ describe('maxHeight', () => {
 
   test.each(heightTestArgs)('scales with list size', (args) => {
       const list = new SkipList();
-      list.size_ = args.size;
+      list.size = () => args.size;
       expect(list.maxHeight()).toBe(args.maxHeight);
   });
 
