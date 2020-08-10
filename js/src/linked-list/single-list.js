@@ -22,18 +22,6 @@ export class SingleList {
   }
 
   get(itemId) {
-    if (itemId === null || itemId === undefined) {
-      return null;
-    }
-    if (typeof itemId !== 'number') {
-      throw `id was ${typeof itemId}, but it must be a number`;
-    }
-    if (!Number.isInteger(itemId)) {
-      throw 'id was not an integer';
-    }
-    if (!this.items_.contains(itemId)) {
-      return null;
-    }
     return this.items_.get(itemId);
   }
 

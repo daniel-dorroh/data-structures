@@ -19,7 +19,9 @@ export class DenseRepository {
     } else {
       itemId = this.items_.push(item) - 1;
     }
-    item.id = itemId;
+    if (item.hasOwnProperty('id')) {
+      item.id = itemId;
+    }
     this.size_++;
     return itemId;
   }
@@ -29,6 +31,18 @@ export class DenseRepository {
   }
 
   get(itemId) {
+    if (itemId === null || itemId === undefined) {
+      return null;
+    }
+    if (typeof itemId !== 'number') {
+      throw `id was ${typeof itemId}, but it must be a number`;
+    }
+    if (!Number.isInteger(itemId)) {
+      throw 'id was not an integer';
+    }
+    if (!this.contains(itemId)) {
+      return null;
+    }
     return this.items_[itemId];
   }
 
