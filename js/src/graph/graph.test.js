@@ -37,24 +37,13 @@ test('should ', () => {
 /**
  * getNode tests
  */
-describe('getNode', () => {
-
-  test.each([null, undefined])('null or undefined nodeId returns null', (nodeId) => {
-    expect(new Graph().getNode(nodeId)).toBeNull();
-  });
-
-  test.each([{}, [], '1', true])('get non-number id throws -- arg "%s"', (id) => {
-    expect(() => new Graph().getNode(id)).toThrow(`id was ${typeof id}, but it must be a number`);
-  });
-
-  test('get decimal id throws', () => {
-    expect(() => new Graph().getNode(1.1)).toThrow('id was not an integer');
-  });
-
-  test('get with invalid id returns null', () => {
-    expect(new Graph().getNode(2)).toBeNull();
-  });
-
+test('gets node by ID', () => {
+  const graph = new Graph();
+  const value = 25;
+  const nodeId = graph.addNode(25);
+  const node = graph.getNode(nodeId);
+  expect(node.value).toBe(value);
+  expect(node.id).toBe(nodeId);
 });
 
 /**
@@ -79,6 +68,19 @@ describe('addNode', () => {
 });
 
 /**
+ * getEdge tests
+ */
+test('gets edge by ID', () => {
+  const graph = new Graph();
+  const node1Id = graph.addNode(25);
+  const node2Id = graph.addNode(35);
+  const edgeId = graph.addEdge(node1Id, node2Id);
+  const edge = graph.getEdge(edgeId);
+  expect(edge.node1Id).toBe(node1Id);
+  expect(edge.node2Id).toBe(node2Id);
+});
+
+/**
  * addEdge tests
  */
 describe('addEdge', () => {
@@ -93,6 +95,15 @@ describe('addEdge', () => {
     const graph = new Graph();
     const node1Id = graph.addNode(25);
     expect(() => graph.addEdge(node1Id, node2Id)).toThrow(`node2Id '${node2Id}' is not valid`);
+  });
+
+  test('adds edge', () => {
+    const graph = new Graph();
+    const node1Id = graph.addNode(25);
+    const node2Id = graph.addNode(35);
+    const edgeId = graph.addEdge(node1Id, node2Id);
+    const edge = graph.getEdge(edgeId);
+    expect(edge.id).toBe(edgeId);
   });
 
 });

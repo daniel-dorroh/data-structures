@@ -27,6 +27,10 @@ export class Graph {
     return this.nodes_.add(item);
   }
 
+  getEdge(id) {
+    return this.edges_.get(id);
+  }
+
   addEdge(node1Id, node2Id) {
     if (!this.nodes_.contains(node1Id)) {
       throw `node1Id '${node1Id}' is not valid`;
