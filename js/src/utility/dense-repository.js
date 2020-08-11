@@ -27,7 +27,9 @@ export class DenseRepository {
   }
 
   contains(itemId) {
-    return itemId <= this.items_.length - 1;
+    return itemId !== undefined
+        && itemId !== null
+        && itemId <= this.items_.length - 1;
   }
 
   get(itemId) {

@@ -66,6 +66,10 @@ describe('add', () => {
    */
   describe('contains', () => {
 
+    test.each([null, undefined])('false if checked ID is null or undefined', (id) => {
+      expect(new DenseRepository().contains(id)).toBe(false);
+    });
+
     test('false if checked ID is not in the repository', () => {
       expect(new DenseRepository().contains(1)).toBe(false);
     });
