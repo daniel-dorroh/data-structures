@@ -35,6 +35,10 @@ describe('size', () => {
  */
 describe('add', () => {
 
+  test.each([null, undefined])('throws if item is null or undefined', (item) => {
+    expect(() => new DenseRepository().add(item)).toThrow(`item is ${item}`);
+  });
+
   test('adds item and returns id', () => {
     const repository = new DenseRepository();
     const item = 25;
@@ -115,15 +119,29 @@ describe('add', () => {
   /**
    * remove tests
    */
-  test('remove removes item and adds freed id', () => {
-    const repository = new DenseRepository();
-    const item = 25;
-    const itemId = repository.add(item);
-    repository.remove(itemId);
-    expect(repository.size()).toBe(0);
-    expect(repository.freedIds_).toHaveLength(1);
-    expect(repository.freedIds_[0]).toBe(itemId);
-    expect(repository.get(itemId)).toBe(null);
+  describe('remove', () => {
+
+    test.each([null, undefined, 25])('does nothing for invalid id', (id) => {
+      const repository = new DenseRepository();
+      const itemId = repository.add(35);
+      expect(repository.size()).toBe(1);
+      repository.remove(id);
+      expect(repository.size()).toBe(1);
+      expect(repository.freedIds_).toHaveLength(0);
+      expect(repository.get(itemId)).not.toBeNull();
+    });
+
+    test('remove removes item and adds freed id', () => {
+      const repository = new DenseRepository();
+      const item = 25;
+      const itemId = repository.add(item);
+      repository.remove(itemId);
+      expect(repository.size()).toBe(0);
+      expect(repository.freedIds_).toHaveLength(1);
+      expect(repository.freedIds_[0]).toBe(itemId);
+      expect(repository.get(itemId)).toBe(null);
+    });
+
   });
 
 });

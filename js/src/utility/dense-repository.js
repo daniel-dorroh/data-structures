@@ -12,6 +12,9 @@ export class DenseRepository {
   }
 
   add(item) {
+    if (item === null || item === undefined) {
+      throw `item is ${item}`;
+    }
     let itemId = null;
     if (this.freedIds_.length) {
       itemId = this.freedIds_.pop();
@@ -49,6 +52,11 @@ export class DenseRepository {
   }
 
   remove(itemId) {
+    if (itemId === null
+        || itemId === undefined
+        || !this.contains(itemId)) {
+      return;
+    }
     this.items_[itemId] = null;
     this.freedIds_.push(itemId);
     this.size_--;
