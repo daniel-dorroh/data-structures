@@ -35,6 +35,10 @@ export class DenseRepository {
         && itemId <= this.items_.length - 1;
   }
 
+  getAll() {
+    return this.items_;
+  }
+
   get(itemId) {
     if (itemId === null || itemId === undefined) {
       return null;

@@ -117,6 +117,18 @@ describe('add', () => {
   });
 
   /**
+   * getAll tests
+   */
+  test('getAll returns all items', () => {
+    const repository = new DenseRepository();
+    const items = [25, 35, 45, 55];
+    for (let item of items) {
+      repository.add(item);
+    }
+    expect(repository.getAll()).toStrictEqual(items);
+  });
+
+  /**
    * remove tests
    */
   describe('remove', () => {
