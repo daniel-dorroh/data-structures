@@ -40,10 +40,26 @@ export class HashTable {
     const binItem = this.storage_[binIndex];
     if (binItem === null || binItem === undefined) {
       return null;
-    } else if (binItem.value) {
+    } else if (binItem.value !== undefined) {
       return binItem.value;
     }
     return binItem.get(key);
+  }
+
+  remove(key) {
+    if (key === null || key === undefined) {
+      return;
+    }
+    const hash = this.hash(key);
+    const binIndex = hash % this.binCount_;
+    const binItem = this.storage_[binIndex];
+    if (binItem === null || binItem === undefined) {
+      return;
+    } else if (typeof binItem.remove !== 'function') {
+      this.storage_[binIndex] = null;
+    } else {
+      binItem.remove(key);
+    }
   }
 
   hash(key) {

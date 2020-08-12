@@ -137,7 +137,7 @@ describe('hash', () => {
   describe('when hash collisions happen', () => {
 
     let table1, table2;
-    let hashValues, testInputs, collisionKeys;
+    let hashValues, previousKeys, collisionKeys;
     let isKeyFound, binIndex;
 
     beforeEach(() => {
@@ -145,7 +145,7 @@ describe('hash', () => {
       table1 = new HashTable();
       table2 = new HashTable();
       hashValues = new Set();
-      testInputs = {};
+      previousKeys = {};
       collisionKeys = [];
       isKeyFound = false;
       binIndex = null;
@@ -156,13 +156,13 @@ describe('hash', () => {
           collisionKeys.push(key);
           break;
         }
-        if (!isKeyFound && hashValues.has(hash) && key !== testInputs[hash]) {
+        if (!isKeyFound && hashValues.has(hash) && key !== previousKeys[hash]) {
           collisionKeys.push(key);
-          collisionKeys.push(testInputs[hash]);
+          collisionKeys.push(previousKeys[hash]);
           isKeyFound = true;
           binIndex = hash % table1.binCount_;
         }
-        testInputs[hash] = key;
+        previousKeys[hash] = key;
         hashValues.add(hash);
       }
 
@@ -243,6 +243,54 @@ describe('add', () => {
     table.add(key, 35);
     table.add(key, finalValue);
     expect(table.get(key)).toStrictEqual(finalValue);
+  });
+
+});
+
+/**
+ * remove tests
+ */
+describe('remove', () => {
+
+  test.each([null, undefined])('does not throw if key is null or undefined', (key) => {
+    expect(() => new HashTable().remove(key)).not.toThrow();
+  });
+
+  test('does not throw if key does not exist', () => {
+    expect(() => new HashTable().remove(25)).not.toThrow();
+  });
+
+  test('removes ordinary item', () => {
+    const table = new HashTable();
+    const key = 25;
+    table.add(key, 55);
+    table.remove(key);
+    expect(table.get(key)).toBeNull();
+  });
+
+  test('removes nested item', () => {
+    const table = new HashTable();
+    const hashValues = new Set();
+    const previousKeys = {};
+    const collisionKeys = [];
+    while (true) {
+      const key = Math.floor(Math.random() * (Math.pow(2, 32) - 1));
+      const hash = table.hash(key);
+      if (hashValues.has(hash) && key !== previousKeys[hash]) {
+        collisionKeys.push(key);
+        collisionKeys.push(previousKeys[hash]);
+        break;
+      }
+      previousKeys[hash] = key;
+      hashValues.add(hash);
+    }
+    let value = 55;
+    for (let key of collisionKeys) {
+      table.add(key, value++);
+    }
+    table.remove(collisionKeys[0]);
+    expect(table.get(collisionKeys[1])).toBe(56);
+    expect(table.get(collisionKeys[0])).toBeNull();
   });
 
 });
