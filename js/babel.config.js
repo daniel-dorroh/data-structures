@@ -12,7 +12,9 @@ module.exports = function (api) {
       },
     ],
   ];
-  const plugins = [];
+  const plugins = [
+    ["@babel/plugin-transform-runtime", { "regenerator": true }]
+  ];
 
   return {
     presets,

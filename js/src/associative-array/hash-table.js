@@ -13,6 +13,22 @@ export class HashTable {
     this.size_ = 0;
   }
 
+  [Symbol.iterator]() {
+    const storage = this.storage_;
+    const iterator = function*() {
+      for (let value of storage) {
+        if (value !== undefined && value !== null) {
+          if (typeof value.size === 'function') {
+            yield* value;
+          } else {
+            yield value;
+          }
+        }
+      }
+    }
+    return iterator();
+  }
+
   size() {
     return this.size_;
   }

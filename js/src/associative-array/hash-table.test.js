@@ -151,76 +151,6 @@ describe('hash', () => {
     expect(table.hash(Math.pow(2, 33))).toBeDefined();
   });
 
-  describe('when hash collisions happen', () => {
-
-    let table1, table2;
-    let hashValues, previousKeys, collisionKeys;
-    let isKeyFound, binIndex;
-
-    beforeEach(() => {
-
-      table1 = new HashTable();
-      table2 = new HashTable();
-      hashValues = new Set();
-      previousKeys = {};
-      collisionKeys = [];
-      isKeyFound = false;
-      binIndex = null;
-      while (true) {
-        const key = Math.floor(Math.random() * (Math.pow(2, 32) - 1));
-        const hash = table1.hash(key);
-        if (isKeyFound && hash % table1.binCount_ === binIndex) {
-          collisionKeys.push(key);
-          break;
-        }
-        if (!isKeyFound && hashValues.has(hash) && key !== previousKeys[hash]) {
-          collisionKeys.push(key);
-          collisionKeys.push(previousKeys[hash]);
-          isKeyFound = true;
-          binIndex = hash % table1.binCount_;
-        }
-        previousKeys[hash] = key;
-        hashValues.add(hash);
-      }
-
-    });
-
-    test('different hash tables produce different hash results', () => {
-      expect(table1.hash(collisionKeys[0])).toStrictEqual(table1.hash(collisionKeys[1]));
-      expect(table2.hash(collisionKeys[0])).not.toStrictEqual(table2.hash(collisionKeys[1]));
-    });
-
-    test('table handles collision by adding bin table', () => {
-      const value1 = 25;
-      const value2 = 35;
-      const key1 = collisionKeys[0];
-      const key2 = collisionKeys[1];
-      table1.add(key1, value1);
-      table1.add(key2, value2);
-      const binTable = table1.storage_[binIndex];
-      expect(typeof binTable.get).toBe('function');
-      expect(binTable.get(key1)).not.toStrictEqual(binTable.get(key2));
-      expect(table1.get(key1)).toBe(value1);
-      expect(table1.get(key2)).toBe(value2);
-    });
-
-    test('3rd or more item is added to the bin table ', () => {
-      const value1 = 25;
-      const value2 = 35;
-      const value3 = 45;
-      const key1 = collisionKeys[0];
-      const key2 = collisionKeys[1];
-      const key3 = collisionKeys[2];
-      table1.add(key1, value1);
-      table1.add(key2, value2);
-      table1.add(key3, value3);
-      const binTable = table1.storage_[binIndex];
-      expect(binTable.get(key3)).toBe(value3);
-      expect(table1.size()).toBe(3);
-    });
-
-  });
-
 });
 
 /**
@@ -316,4 +246,113 @@ describe('remove', () => {
 
 });
 
+/**
+ * collision tests
+ */
+describe('when hash collisions happen', () => {
 
+  let table1, table2;
+  let hashValues, previousKeys, collisionKeys;
+  let isKeyFound, binIndex;
+
+  beforeEach(() => {
+
+    table1 = new HashTable();
+    table2 = new HashTable();
+    hashValues = new Set();
+    previousKeys = {};
+    collisionKeys = [];
+    isKeyFound = false;
+    binIndex = null;
+    while (true) {
+      const key = Math.floor(Math.random() * (Math.pow(2, 32) - 1));
+      const hash = table1.hash(key);
+      if (isKeyFound && hash % table1.binCount_ === binIndex) {
+        collisionKeys.push(key);
+        break;
+      }
+      if (!isKeyFound && hashValues.has(hash) && key !== previousKeys[hash]) {
+        collisionKeys.push(key);
+        collisionKeys.push(previousKeys[hash]);
+        isKeyFound = true;
+        binIndex = hash % table1.binCount_;
+      }
+      previousKeys[hash] = key;
+      hashValues.add(hash);
+    }
+
+  });
+
+  test('different hash tables produce different hash results', () => {
+    expect(table1.hash(collisionKeys[0])).toStrictEqual(table1.hash(collisionKeys[1]));
+    expect(table2.hash(collisionKeys[0])).not.toStrictEqual(table2.hash(collisionKeys[1]));
+  });
+
+  test('table handles collision by adding bin table', () => {
+    const value1 = 25;
+    const value2 = 35;
+    const key1 = collisionKeys[0];
+    const key2 = collisionKeys[1];
+    table1.add(key1, value1);
+    table1.add(key2, value2);
+    const binTable = table1.storage_[binIndex];
+    expect(typeof binTable.get).toBe('function');
+    expect(binTable.get(key1)).not.toStrictEqual(binTable.get(key2));
+    expect(table1.get(key1)).toBe(value1);
+    expect(table1.get(key2)).toBe(value2);
+  });
+
+  test('3rd or more item is added to the bin table ', () => {
+    const value1 = 25;
+    const value2 = 35;
+    const value3 = 45;
+    const key1 = collisionKeys[0];
+    const key2 = collisionKeys[1];
+    const key3 = collisionKeys[2];
+    table1.add(key1, value1);
+    table1.add(key2, value2);
+    table1.add(key3, value3);
+    const binTable = table1.storage_[binIndex];
+    expect(binTable.get(key3)).toBe(value3);
+    expect(table1.size()).toBe(3);
+  });
+
+  test('iterable protocol allows for for..of', () => {
+    const value1 = 25;
+    const value2 = 35;
+    const value3 = 45;
+    const value4 = 55;
+    const key1 = collisionKeys[0];
+    const key2 = collisionKeys[1];
+    const key3 = collisionKeys[2];
+    const key4 = 12322;
+    table1.add(key1, value1);
+    table1.add(key2, value2);
+    table1.add(key3, value3);
+    table1.add(key4, value4);
+    const values = new Set([
+      {
+        key: key1,
+        value: value1,
+      },
+      {
+        key: key2,
+        value: value2,
+      },
+      {
+        key: key3,
+        value: value3,
+      },
+      {
+        key: key4,
+        value: value4,
+      },
+    ]);
+    const result = new Set();
+    for (let item of table1) {
+      result.add({key: item.key, value: item.value});
+    }
+    expect(result).toStrictEqual(values);
+  });
+
+});
