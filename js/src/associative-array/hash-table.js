@@ -1,12 +1,9 @@
-import { Base64 } from '../utility/base-64';
-
 export class HashTable {
 
   constructor(binCount = 1000) {
     if (binCount < 1) {
       throw `${binCount} is less than 1, the minimum number of bins`;
     }
-    this.base64_ = new Base64();
     this.storage_ = [];
     this.intBitCount = 32;
     this.binCount_ = binCount;
@@ -103,7 +100,7 @@ export class HashTable {
     if (!key.length) {
       throw 'string key is empty and cannot be hashed';
     }
-    const encodedKey = this.base64_.encode(key);
+    const encodedKey = this.encodeBase64_(key);
     let hash = 0;
     for (let i = 0; i < encodedKey.length; i++) {
       const charCode = encodedKey.charCodeAt(i);
@@ -121,6 +118,13 @@ export class HashTable {
       const key2String = JSON.stringify(key2);
       return key1String === key2String;
     }
+  }
+
+  encodeBase64_(key) {
+    const uriEncodedKey = encodeURIComponent(key).replace(
+        /%([0-9A-F]{2})/g,
+        (match, p1) => String.fromCharCode('0x' + p1));
+    return btoa(uriEncodedKey);
   }
 
 }
