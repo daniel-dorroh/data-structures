@@ -10,6 +10,11 @@ export class HashTable {
     this.maxIntValue_ = Math.pow(2, this.intBitCount) - 1;
     this.factor_ = Math.floor(Math.random() * (this.maxIntValue_ - 1) + 1);
     this.bias_ = Math.floor(Math.random() * (this.maxIntValue_ - 1));
+    this.size_ = 0;
+  }
+
+  size() {
+    return this.size_;
   }
 
   add(key, value) {
@@ -31,6 +36,7 @@ export class HashTable {
     } else {
       binItem.add(key, value);
     }
+    this.size_++;
   }
 
   get(key) {
@@ -59,6 +65,7 @@ export class HashTable {
     } else {
       binItem.remove(key);
     }
+    this.size_--;
   }
 
   hash(key) {

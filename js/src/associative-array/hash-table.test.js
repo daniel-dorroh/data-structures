@@ -20,6 +20,7 @@ describe('constructor', () => {
     table.add(25, 'twenty-five');
     table.add(35, 'thirty-five');
     expect(table.storage_).toHaveLength(1);
+    expect(table.size()).toBe(2);
   });
 
 });
@@ -215,6 +216,7 @@ describe('hash', () => {
       table1.add(key3, value3);
       const binTable = table1.storage_[binIndex];
       expect(binTable.get(key3)).toBe(value3);
+      expect(table1.size()).toBe(3);
     });
 
   });
@@ -259,6 +261,7 @@ describe('add', () => {
     table.add(key, 35);
     table.add(key, finalValue);
     expect(table.get(key)).toStrictEqual(finalValue);
+    expect(table.size()).toBe(1);
   });
 
 });
@@ -282,6 +285,7 @@ describe('remove', () => {
     table.add(key, 55);
     table.remove(key);
     expect(table.get(key)).toBeNull();
+    expect(table.size()).toBe(0);
   });
 
   test('removes nested item', () => {
@@ -307,6 +311,7 @@ describe('remove', () => {
     table.remove(collisionKeys[0]);
     expect(table.get(collisionKeys[1])).toBe(56);
     expect(table.get(collisionKeys[0])).toBeNull();
+    expect(table.size()).toBe(1);
   });
 
 });
