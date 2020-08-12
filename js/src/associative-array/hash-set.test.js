@@ -104,3 +104,18 @@ describe('remove', () => {
 
 });
 
+/**
+ * iterable protocol tests
+ */
+test('iterable protocol implementation allows for for..of iteration', () => {
+  const set = new HashSet();
+  const values = new Set([15, 25, 35, 45]);
+  for (let value of values) {
+    set.add(value);
+  }
+  const setValues = new Set();
+  for (let setItem of set) {
+    setValues.add(setItem.value);
+  }
+  expect(setValues).toStrictEqual(values);
+});

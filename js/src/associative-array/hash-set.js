@@ -13,6 +13,14 @@ export class HashSet {
     this.size_ = 0;
   }
 
+  [Symbol.iterator]() {
+    const items = this.items_;
+    const iterator = function*() {
+      yield* items;
+    }
+    return iterator();
+  }
+
   size() {
     return this.size_;
   }
