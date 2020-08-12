@@ -1,3 +1,4 @@
+import { Base64 } from '../utility/base-64';
 
 export class HashTable {
 
@@ -5,6 +6,7 @@ export class HashTable {
     if (binCount < 1) {
       throw `${binCount} is less than 1, the minimum number of bins`;
     }
+    this.base64_ = new Base64();
     this.storage_ = [];
     this.intBitCount = 32;
     this.binCount_ = binCount;
@@ -101,10 +103,11 @@ export class HashTable {
     if (!key.length) {
       throw 'string key is empty and cannot be hashed';
     }
+    const encodedKey = this.base64_.encode(key);
     let hash = 0;
-    for (let i = 0; i < key.length; i++) {
-      const charCode = key.charCodeAt(i);
-      hash = ((this.factor_ * hash) + charCode) % this.maxIntValue_;
+    for (let i = 0; i < encodedKey.length; i++) {
+      const charCode = encodedKey.charCodeAt(i);
+      hash = (this.factor_ * charCode * i + hash) % this.maxIntValue_;
     }
     return hash;
   }

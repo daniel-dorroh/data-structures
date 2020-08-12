@@ -74,6 +74,22 @@ describe('hashString_', () => {
         .toThrow('string key is empty and cannot be hashed');
   });
 
+  test('creates different hash codes for strings containing the same characters', () => {
+    const table = new HashTable();
+    const key1 = "abc10";
+    const key2 = "10abc";
+    const key3 = "a1b0c";
+    const key4 = "a10bc";
+    const hash1 = table.hashString_(key1);
+    const hash2 = table.hashString_(key2);
+    const hash3 = table.hashString_(key3);
+    const hash4 = table.hashString_(key4);
+    expect([hash2, hash3, hash4]).not.toContainEqual(hash1);
+    expect([hash1, hash3, hash4]).not.toContainEqual(hash2);
+    expect([hash1, hash2, hash4]).not.toContainEqual(hash3);
+    expect([hash1, hash2, hash3]).not.toContainEqual(hash4);
+  });
+
   // Long running test
   // TODO: uncomment the following test to test for hash uniqueness
   // test('produces unique hashes within 0.5% tolerance for ~1,000,000 random 9 character strings', () => {
@@ -122,8 +138,8 @@ describe('hash', () => {
 
   test('produces different hash for two objects with same properties and different values', () => {
     const table = new HashTable();
-    const key1 = { a: 1, b: 'two', c: [3] };
-    const key2 = { a: 4, b: 'five', c: [6] };
+    const key1 = { a: 1, b: 0 };
+    const key2 = { a: 0, b: 1 };
     const hash1 = table.hash(key1);
     const hash2 = table.hash(key2);
     expect(hash1).not.toStrictEqual(hash2);
