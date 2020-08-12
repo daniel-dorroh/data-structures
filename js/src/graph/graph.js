@@ -1,10 +1,11 @@
 import { DenseRepository } from '../utility/dense-repository';
+import { HashSet } from '../associative-array/hash-set';
 
 export class Graph {
 
   constructor() {
     this.nodes_ = new DenseRepository();
-    this.edges_ = new DenseRepository();
+    this.edges_ = new HashSet();
   }
 
   edgeCount() {
@@ -27,8 +28,8 @@ export class Graph {
     return this.nodes_.add(item);
   }
 
-  getEdge(id) {
-    return this.edges_.get(id);
+  removeNode(id) {
+    this.nodes_.remove(id);
   }
 
   addEdge(node1Id, node2Id) {
@@ -42,6 +43,19 @@ export class Graph {
     return this.edges_.add(edge);
   }
 
+  removeEdge(node1Id, node2Id) {
+    if (node1Id === null
+        || node1Id === undefined
+        || node2Id === null
+        || node2Id === undefined) {
+      return;
+    }
+    let edge = this.createEdge_(node1Id, node2Id);
+    if (this.edges_.get(edge) !== null) {
+      this.edges_.remove(edge);
+    }
+  }
+
   createNode_(value) {
     return {
       id: null,
@@ -51,7 +65,6 @@ export class Graph {
 
   createEdge_(node1Id, node2Id) {
     return {
-      id: null,
       node1Id: node1Id,
       node2Id: node2Id,
     };
