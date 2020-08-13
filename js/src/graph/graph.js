@@ -16,8 +16,7 @@ export class Graph {
     return this.nodes_.size();
   }
 
-  adjacent(node1Id, node2Id) {
-    debugger;
+  areAdjacent(node1Id, node2Id) {
     for (let edge of this.edges_) {
       if ((edge.node1Id === node1Id && edge.node2Id === node2Id)
           || (edge.node2Id === node1Id && edge.node1Id === node2Id)) {
@@ -31,6 +30,16 @@ export class Graph {
     return this.nodes_.get(id);
   }
 
+  getNeighborNodes(nodeId) {
+    const neighbors = new HashSet();
+    for (let edge of this.edges_) {
+      if (edge.node1Id === nodeId) {
+        neighbors.add(this.nodes_.get(edge.node2Id));
+      }
+    }
+    return Array.from(neighbors);
+  }
+
   addNode(value) {
     if (value === null || value === undefined) {
       throw `added value '${value}' is not valid`;
@@ -41,6 +50,15 @@ export class Graph {
 
   removeNode(id) {
     this.nodes_.remove(id);
+    const removedEdges = [];
+    for (let edge of this.edges_) {
+      if (edge.node1Id === id || edge.node2Id === id) {
+        removedEdges.push(edge);
+      }
+    }
+    for (let edge of removedEdges) {
+      this.edges_.remove(edge);
+    }
   }
 
   addEdge(node1Id, node2Id) {

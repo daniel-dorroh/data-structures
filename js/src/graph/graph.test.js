@@ -3,15 +3,11 @@ import { Graph } from './graph';
 /**
  * constructor tests
  */
-describe('constructor', () => {
-
-  test('makes a new Graph', () => {
-    const graph = new Graph();
-    expect(graph).toBeDefined();
-    expect(graph.edgeCount()).toBe(0);
-    expect(graph.nodeCount()).toBe(0);
-  });
-
+test('constructor makes a new Graph', () => {
+  const graph = new Graph();
+  expect(graph).toBeDefined();
+  expect(graph.edgeCount()).toBe(0);
+  expect(graph.nodeCount()).toBe(0);
 });
 
 /**
@@ -35,9 +31,9 @@ test('should ', () => {
 });
 
 /**
- * adjacent tests
+ * areAdjacent tests
  */
-describe('adjacent', () => {
+describe('areAdjacent', () => {
 
   test('false for non adjacent nodes', () => {
     const graph = new Graph();
@@ -45,7 +41,7 @@ describe('adjacent', () => {
     const node2Id = graph.addNode(35);
     const node3Id = graph.addNode(45);
     graph.addEdge(node1Id, node3Id);
-    expect(graph.adjacent(node1Id, node2Id)).toBe(false);
+    expect(graph.areAdjacent(node1Id, node2Id)).toBe(false);
   });
 
   test('true for adjacent nodes no matter the directionality', () => {
@@ -53,8 +49,8 @@ describe('adjacent', () => {
     const node1Id = graph.addNode(25);
     const node2Id = graph.addNode(35);
     graph.addEdge(node1Id, node2Id);
-    expect(graph.adjacent(node1Id, node2Id)).toBe(true);
-    expect(graph.adjacent(node2Id, node1Id)).toBe(true);
+    expect(graph.areAdjacent(node1Id, node2Id)).toBe(true);
+    expect(graph.areAdjacent(node2Id, node1Id)).toBe(true);
   });
 
 });
@@ -69,6 +65,33 @@ test('gets node by ID', () => {
   const node = graph.getNode(nodeId);
   expect(node.value).toBe(value);
   expect(node.id).toBe(nodeId);
+});
+
+/**
+ * getNeighborNodes tests
+ */
+describe('getNeighborNodes', () => {
+
+  test('gets neighbors connected by edges from node', () => {
+    const graph = new Graph();
+    const nodeValue = 25;
+    const neighbor1Value = 35;
+    const neighbor2Value = 45;
+    const nodeId = graph.addNode(nodeValue);
+    const neighbor1Id = graph.addNode(neighbor1Value);
+    const neighbor2Id = graph.addNode(neighbor2Value);
+    const nonNeighborId = graph.addNode(55);
+    graph.addEdge(nodeId, neighbor1Id);
+    graph.addEdge(nodeId, neighbor2Id);
+    graph.addEdge(nonNeighborId, nodeId);
+    const neighborValues = [neighbor1Value, neighbor2Value];
+    const retrievedNeighbors = graph.getNeighborNodes(nodeId);
+    let retrievedNeighborValues = retrievedNeighbors.map(n => n.value).sort();
+    expect(retrievedNeighborValues).toStrictEqual(neighborValues);
+    retrievedNeighborValues = graph.getNeighborNodes(nonNeighborId).map(n => n.value);
+    expect(retrievedNeighborValues).toStrictEqual([nodeValue]);
+  });
+
 });
 
 /**
@@ -95,13 +118,29 @@ describe('addNode', () => {
 /**
  * removeNode tests
  */
-test('removeNode removes node', () => {
-  const graph = new Graph();
-  const nodeId = graph.addNode(25);
-  graph.removeNode(nodeId);
-  expect(graph.getNode(nodeId)).toBeNull();
-  expect(graph.nodeCount()).toBe(0);
+describe('removeNode', () => {
+
+  test('removes node', () => {
+    const graph = new Graph();
+    const nodeId = graph.addNode(25);
+    graph.removeNode(nodeId);
+    expect(graph.getNode(nodeId)).toBeNull();
+    expect(graph.nodeCount()).toBe(0);
+  });
+
+  test('removes any edges connected to and from node', () => {
+    const graph = new Graph();
+    const node1Id = graph.addNode(25);
+    const node2Id = graph.addNode(35);
+    const node3Id = graph.addNode(45);
+    graph.addEdge(node1Id, node2Id);
+    graph.addEdge(node3Id, node1Id);
+    graph.removeNode(node1Id);
+    expect(graph.edgeCount()).toBe(0);
+  });
+
 });
+
 
 /**
  * addEdge tests
