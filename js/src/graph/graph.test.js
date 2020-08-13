@@ -35,6 +35,31 @@ test('should ', () => {
 });
 
 /**
+ * adjacent tests
+ */
+describe('adjacent', () => {
+
+  test('false for non adjacent nodes', () => {
+    const graph = new Graph();
+    const node1Id = graph.addNode(25);
+    const node2Id = graph.addNode(35);
+    const node3Id = graph.addNode(45);
+    graph.addEdge(node1Id, node3Id);
+    expect(graph.adjacent(node1Id, node2Id)).toBe(false);
+  });
+
+  test('true for adjacent nodes no matter the directionality', () => {
+    const graph = new Graph();
+    const node1Id = graph.addNode(25);
+    const node2Id = graph.addNode(35);
+    graph.addEdge(node1Id, node2Id);
+    expect(graph.adjacent(node1Id, node2Id)).toBe(true);
+    expect(graph.adjacent(node2Id, node1Id)).toBe(true);
+  });
+
+});
+
+/**
  * getNode tests
  */
 test('gets node by ID', () => {

@@ -16,6 +16,17 @@ export class Graph {
     return this.nodes_.size();
   }
 
+  adjacent(node1Id, node2Id) {
+    debugger;
+    for (let edge of this.edges_) {
+      if ((edge.node1Id === node1Id && edge.node2Id === node2Id)
+          || (edge.node2Id === node1Id && edge.node1Id === node2Id)) {
+        return true;
+      }
+    }
+    return false;
+  }
+
   getNode(id) {
     return this.nodes_.get(id);
   }

@@ -114,8 +114,8 @@ test('iterable protocol implementation allows for for..of iteration', () => {
     set.add(value);
   }
   const setValues = new Set();
-  for (let setItem of set) {
-    setValues.add(setItem.value);
+  for (let value of set) {
+    setValues.add(value);
   }
   expect(setValues).toStrictEqual(values);
 });

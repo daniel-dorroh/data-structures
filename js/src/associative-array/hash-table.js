@@ -16,12 +16,12 @@ export class HashTable {
   [Symbol.iterator]() {
     const storage = this.storage_;
     const iterator = function*() {
-      for (let value of storage) {
-        if (value !== undefined && value !== null) {
-          if (typeof value.size === 'function') {
-            yield* value;
+      for (let item of storage) {
+        if (item !== undefined && item !== null) {
+          if (typeof item.size === 'function') {
+            yield* item;
           } else {
-            yield value;
+            yield item.value;
           }
         }
       }

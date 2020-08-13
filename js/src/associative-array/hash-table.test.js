@@ -330,27 +330,10 @@ describe('when hash collisions happen', () => {
     table1.add(key2, value2);
     table1.add(key3, value3);
     table1.add(key4, value4);
-    const values = new Set([
-      {
-        key: key1,
-        value: value1,
-      },
-      {
-        key: key2,
-        value: value2,
-      },
-      {
-        key: key3,
-        value: value3,
-      },
-      {
-        key: key4,
-        value: value4,
-      },
-    ]);
+    const values = new Set([value1, value2, value3, value4]);
     const result = new Set();
     for (let item of table1) {
-      result.add({key: item.key, value: item.value});
+      result.add(item);
     }
     expect(result).toStrictEqual(values);
   });
