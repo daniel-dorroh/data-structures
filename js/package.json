@@ -2,7 +2,7 @@
   "name": "@dinosanjo/data-structures",
   "version": "1.0.0",
   "description": "JavaScript implementation of some data structures",
-  "main": "./src/data-structures.js",
+  "main": "./dist/data-structures.js",
   "scripts": {
     "build": "babel ./src --out-dir dist --ignore **/*.test.js",
     "test": "jest",
