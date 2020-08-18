@@ -4,3 +4,6 @@ node_modules/
 
 # Jest coverage report
 coverage/
+
+# Babel build
+dist/
