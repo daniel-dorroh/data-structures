@@ -4,6 +4,7 @@
   "description": "JavaScript implementation of some data structures",
   "main": "./src/data-structures.js",
   "scripts": {
+    "build": "babel ./src --out-dir dist --ignore **/*.test.js",
     "test": "jest",
     "test-watch": "jest --watchAll --coverage"
   },
@@ -14,9 +15,12 @@
     "url": "https://github.com/daniel-dorroh/data-structures.git"
   },
   "devDependencies": {
+    "@babel/cli": "^7.10.5",
+    "@babel/core": "^7.0.0",
+    "@babel/plugin-transform-modules-commonjs": "^7.10.4",
+    "@babel/plugin-transform-runtime": "^7.11.0",
     "@babel/preset-env": "^7.10.4",
     "babel-jest": "^26.1.0",
-    "@babel/plugin-transform-runtime": "^7.11.0",
     "jest": "^26.1.0"
   }
 }
