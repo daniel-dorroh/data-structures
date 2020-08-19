@@ -221,6 +221,26 @@ describe('getValue', () => {
 });
 
 /**
+ * getValues tests
+ */
+describe('getValues', () => {
+
+  test('returns empty array if list is empty', () => {
+    expect(new SingleList().getValues()).toStrictEqual([]);
+  });
+
+  test('returns values in order', () => {
+    const list = new SingleList();
+    const values = [1, 2, 3, 4, 5];
+    for (const value of values) {
+      list.pushBack(value);
+    }
+    expect(list.getValues()).toStrictEqual(values);
+  });
+
+});
+
+/**
  * delete tests
  */
 describe('delete', () => {

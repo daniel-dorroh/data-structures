@@ -49,6 +49,10 @@ export class SingleList {
     return item && item.value;
   }
 
+  getValues() {
+    return Array.from(this).map(item => item.value);
+  }
+
   pushBack(itemValue) {
     const listItem = this.create_(itemValue, null);
     const itemId = this.items_.add(listItem);
