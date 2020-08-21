@@ -37,6 +37,16 @@ describe('max heap', () => {
 
   });
 
+  describe('replace', () => {
+
+    test('returns max value and correctly inserts the replacement', () => {
+      const heap = new Heap(type, [1, 2, 3, 4, 5]);
+      heap.replace(0);
+      expect(heap.pop()).toBe(4);
+    });
+
+  });
+
 });
 
 describe('min heap', () => {
@@ -56,6 +66,16 @@ describe('min heap', () => {
       const heap = new Heap(type, values);
       heap.siftDown_(0);
       expect(heap.heap_).toStrictEqual([1, 2, 3, 4, 5, 6, 7, 8, 9]);
+    });
+
+  });
+
+  describe('replace', () => {
+
+    test('returns max value and correctly inserts the replacement', () => {
+      const heap = new Heap(type, [1, 2, 3, 4, 5]);
+      heap.replace(0);
+      expect(heap.pop()).toBe(0);
     });
 
   });
