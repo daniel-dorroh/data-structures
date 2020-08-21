@@ -2,6 +2,7 @@
 export const HEAP_TYPES = { MINIMUM: 'min', MAXIMUM: 'max' };
 
 const isOdd = (value) => value % 2 !== 0;
+const isNullOrUndefined = (value) => value === undefined || value === null;
 
 export class Heap {
 
@@ -18,6 +19,10 @@ export class Heap {
     this.heap_ = initialItems.sort((a, b) => -this.priorityCompare_(a, b));
   }
 
+  [Symbol.iterator]() {
+    return this.heap_[Symbol.iterator]();
+  }
+
   push(value) {
     let position = this.heap_.length;
     this.heap_[position] = value;
@@ -29,7 +34,7 @@ export class Heap {
 
   pop() {
     const value = this.heap_[0];
-    this.heap_[0] = this.getLeastPriorityValue_();
+    this.heap_[0] = this.heap_.pop();
     this.siftDown_(0);
     return value;
   }
@@ -45,20 +50,6 @@ export class Heap {
     return this.heap_[0];
   }
 
-  getMax() {
-    if (this.isMaximumHeap_) {
-      return this.pop();
-    }
-    this.getLeastPriorityValue_();
-  }
-
-  getMin() {
-    if (!this.isMaximumHeap_) {
-      return this.pop();
-    }
-    this.getLeastPriorityValue_();
-  }
-
   getParentPosition_(position) {
     if (position === 0) {
       return position;
@@ -68,15 +59,22 @@ export class Heap {
         : (position - 2) / 2;
   }
 
-  getLeftChildPosition_(position) {
-    return 2 * position + 1;
+  getLeftChildPosition_(parentPosition) {
+    return 2 * parentPosition + 1;
   }
 
-  getRightChildPosition_(position) {
-    return 2 * position + 2;
+  getRightChildPosition_(parentPosition) {
+    return 2 * parentPosition + 2;
   }
 
   isValue1Priority_(value1, value2) {
+    if (isNullOrUndefined(value1) && isNullOrUndefined(value2)
+        || isNullOrUndefined(value2)) {
+      return true;
+    }
+    if (isNullOrUndefined(value1)) {
+      return false;
+    }
     return this.isMaximumHeap_ ? value1 >= value2 : value1 < value2;
   }
 
@@ -92,7 +90,7 @@ export class Heap {
     return parentPosition === this.getPriorityPosition_(parentPosition, childPosition);
   }
 
-  isPositionValid_(position) {
+  isValid_(position) {
     return position < this.heap_.length;
   }
 
@@ -102,19 +100,15 @@ export class Heap {
     return this.isValue1Priority_(value1, value2) ? position1 : position2;
   }
 
-  getThreewayPriorityPosition_(parentPosition, leftChildPosition, rightChildPosition) {
+  getHighestPriorityPosition_(parentPosition, leftChildPosition, rightChildPosition) {
     let priorityPosition = parentPosition;
-    if (this.isPositionValid_(leftChildPosition)) {
+    if (this.isValid_(leftChildPosition)) {
       priorityPosition = this.getPriorityPosition_(priorityPosition, leftChildPosition);
     }
-    if (this.isPositionValid_(rightChildPosition)) {
+    if (this.isValid_(rightChildPosition)) {
       priorityPosition = this.getPriorityPosition_(priorityPosition, rightChildPosition);
     }
     return priorityPosition;
-  }
-
-  getLeastPriorityValue_() {
-    return this.heap_.pop();
   }
 
   swapValues_(position1, position2) {
@@ -139,7 +133,7 @@ export class Heap {
       const leftChildPosition = this.getLeftChildPosition_(position);
       const rightChildPosition = this.getRightChildPosition_(position);
       const priorityPosition =
-          this.getThreewayPriorityPosition_(
+          this.getHighestPriorityPosition_(
             position,
             leftChildPosition,
             rightChildPosition);
