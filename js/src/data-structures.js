@@ -7,4 +7,4 @@ export { Queue } from './queue/queue';
 export { HashTable } from './associative-array/hash-table';
 export { HashSet } from './associative-array/hash-set';
 export { Graph } from './graph/graph';
-export { Heap } from './tree/heap';
+export { Heap, HEAP_TYPES } from './tree/heap';
